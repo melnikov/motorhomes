@@ -7,8 +7,22 @@
 //
 
 #import "LeftMenuController.h"
+#import "SignInController.h"
+#import "LOMInventoryController.h"
+#import "LOIInventoryController.h"
 
-#import "AppDelegate.h"
+enum MenuSection
+{
+	MenuSectionPreownedInventory   = 10,
+	MenuSectionFeaturedInventory   = 20,
+	MenuSectionServiceCenter       = 30,
+	MenuSectionConsignmentProgram  = 40,
+	MenuSectionNotifications       = 50,
+	MenuSectionWishList            = 60,
+	MenuSectionSignIn              = 70,
+	MenuSectionCreateAccount	   = 80,
+	MenuSectionFAQ				   = 90
+};
 
 @interface LeftMenuController ()
 {
@@ -17,6 +31,8 @@
 	IBOutlet UIView *accountBlocker;
 	IBOutlet UIScrollView *scroll;
 	IBOutlet UIView *scrollContent;
+	
+	NSArray * viewControllers;
 }
 
 @end
@@ -43,7 +59,67 @@
 	
 	scroll.contentSize = CGSizeMake(scroll.contentSize.width, scrollContent.frame.size.height);
 	
-	//scroll.frame = [[UIScreen mainScreen] bounds];
+	[self setupViewControllers];
+}
+
+-(void)setupViewControllers
+{
+	NSMutableArray * controllers = [NSMutableArray new];
+	
+	UINavigationController * signIn = [self createCustomNavigationControllerFromViewController:[SignInController new]];
+	
+	[controllers addObject:signIn];
+	
+	UINavigationController * lomInventory = [self createCustomNavigationControllerFromViewController:[LOMInventoryController new]];
+	
+	[controllers addObject:lomInventory];
+	
+	UINavigationController * loiInventory = [self createCustomNavigationControllerFromViewController:[LOIInventoryController new]];
+	
+	[controllers addObject:loiInventory];
+	
+	[appDelegate.menuController setCenterViewController:controllers[0]];
+	
+	viewControllers = controllers;
+}
+
+-(UINavigationController*)createCustomNavigationControllerFromViewController:(UIViewController*)controller
+{
+	UINavigationController * nav = [[UINavigationController alloc] initWithRootViewController:controller];
+	nav.navigationBar.clipsToBounds = NO;
+	
+	CGRect rect = nav.navigationBar.frame;
+	
+	UIImageView * background = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"navigationBackground.png"] stretchableImageWithLeftCapWidth:0 topCapHeight:0]];
+	background.frame = CGRectMake(0, 0, rect.size.width, rect.size.height + 2);
+	background.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+	
+	[nav.navigationBar insertSubview:background atIndex:1];
+	
+	UIButton * leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	leftButton.frame = CGRectMake(0, 0, 44, 44);
+	leftButton.tag = 10;
+	
+	[nav.navigationBar addSubview:leftButton];
+	
+	UIButton * rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	rightButton.frame = CGRectMake(rect.size.width - 44, 0, 44, 44);
+	rightButton.tag = 20;
+	
+	[nav.navigationBar addSubview:rightButton];
+	
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(44, 0, rect.size.width - 88, rect.size.height)];
+	label.backgroundColor = [UIColor clearColor];
+	label.font = [UIFont fontWithName:@"Helvetica Neue" size:20];
+	label.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+	label.shadowOffset = CGSizeMake(0, 1);
+	label.textAlignment = UITextAlignmentCenter;
+	label.textColor =[UIColor whiteColor];
+	label.tag = 30;
+	
+	[nav.navigationBar addSubview:label];
+
+	return nav;
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -51,10 +127,53 @@
 	[super viewWillAppear:animated];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (IBAction)menuButtonPressed:(UIButton *)sender {
+	
+	UINavigationController * navController;
+	
+	switch (sender.tag) {
+		case MenuSectionPreownedInventory:
+			navController = viewControllers[1];
+			break;
+			
+		case MenuSectionFeaturedInventory:
+			navController = viewControllers[2];
+			break;
+			
+		case MenuSectionServiceCenter:
+			navController = viewControllers[0];
+			break;
+			
+		case MenuSectionConsignmentProgram:
+			navController = viewControllers[0];
+			break;
+			
+		case MenuSectionNotifications:
+			navController = viewControllers[0];
+			break;
+			
+		case MenuSectionWishList:
+			navController = viewControllers[0];
+			break;
+			
+		case MenuSectionSignIn:
+			navController = viewControllers[0];
+			break;
+			
+		case MenuSectionCreateAccount:
+			navController = viewControllers[0];
+			break;
+			
+		case MenuSectionFAQ:
+			navController = viewControllers[0];
+			break;
+			
+		default:
+			break;
+	}
+	
+	[appDelegate.menuController setCenterViewController:navController];
+	[appDelegate.menuController setMenuState:MFSideMenuStateClosed];
 }
 
 #pragma mark Add User Image 

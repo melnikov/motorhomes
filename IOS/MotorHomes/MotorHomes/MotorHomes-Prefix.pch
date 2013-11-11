@@ -11,4 +11,21 @@
 #ifdef __OBJC__
 	#import <UIKit/UIKit.h>
 	#import <Foundation/Foundation.h>
+	#import "AppDelegate.h"
+	#import "LBView.h"
+	#import "DBView.h"
+	#import "BaseViewController.h"
+	#import "GoldButton.h"
+	#import "RedButton.h"
+	#import "GoldTextField.h"
 #endif
+
+#ifdef DEBUG
+#   define ALog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+#else
+#   define ALog(...)
+#endif
+
+#define appDelegate							((AppDelegate *)[UIApplication sharedApplication].delegate)
+#define RGB(r, g, b)                        [UIColor colorWithRed:(r)/255.f green:(g)/255.f blue:(b)/255.f alpha:1.f]
+#define RGBA(r, g, b, a)                    [UIColor colorWithRed:(r)/255.f green:(g)/255.f blue:(b)/255.f alpha:a / 1.f]

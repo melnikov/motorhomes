@@ -7,29 +7,16 @@
 //
 
 #import "AppDelegate.h"
-
-#import "ViewController.h"
-
-#import "MFSideMenuContainerViewController.h"
-
 #import "LeftMenuController.h"
+//#import "SignInController.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    // Override point for customization after application launch.
-	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-	    self.viewController = [[ViewController alloc] initWithNibName:@"ViewController_iPhone" bundle:nil];
-	} else {
-	    self.viewController = [[ViewController alloc] initWithNibName:@"ViewController_iPad" bundle:nil];
-	}
-	
-	UINavigationController *navigation = [[UINavigationController alloc] initWithRootViewController:self.viewController];
-    navigation.navigationBarHidden = YES;
     
-    self.menuController = [MFSideMenuContainerViewController containerWithCenterViewController:navigation leftMenuViewController:[LeftMenuController new] rightMenuViewController:nil];
+    self.menuController = [MFSideMenuContainerViewController containerWithCenterViewController:nil leftMenuViewController:[LeftMenuController new] rightMenuViewController:nil];
 	
     self.window.rootViewController = self.menuController;
 	

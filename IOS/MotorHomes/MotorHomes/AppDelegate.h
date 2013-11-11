@@ -7,15 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@class ViewController;
-@class MFSideMenuContainerViewController;
+#import "MFSideMenuContainerViewController.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
-
-@property (strong, nonatomic) ViewController *viewController;
 
 @property (strong, nonatomic) MFSideMenuContainerViewController *menuController;
 

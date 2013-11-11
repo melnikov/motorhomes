@@ -23,7 +23,7 @@
 	
 	self.separatorView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"separator.png"] stretchableImageWithLeftCapWidth:2 topCapHeight:0]];
 	
-	self.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+	//self.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
 	
 	self.separatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	

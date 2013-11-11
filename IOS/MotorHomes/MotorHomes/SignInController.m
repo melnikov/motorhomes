@@ -6,19 +6,30 @@
 //  Copyright (c) 2013 StexGroup. All rights reserved.
 //
 
-#import "ViewController.h"
+#import "SignInController.h"
 #import "LBView.h"
 
-@interface ViewController ()
+@interface SignInController ()
 
 @end
 
-@implementation ViewController
+@implementation SignInController
+
+-(id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+	if(self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])
+	{
+	
+	}
+	
+	return self;
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+	self.title = @"SIGN IN";
 }
 
 - (void)didReceiveMemoryWarning
