@@ -16,6 +16,7 @@
 	#import "DBView.h"
 	#import "BaseViewController.h"
 	#import "GoldButton.h"
+	#import "GoldBorderButton.h"
 	#import "RedButton.h"
 	#import "GoldTextField.h"
 #endif

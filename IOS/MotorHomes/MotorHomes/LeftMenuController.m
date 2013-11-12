@@ -11,6 +11,8 @@
 #import "LOMInventoryController.h"
 #import "LOIInventoryController.h"
 
+#import "ItemDetailsController.h"
+
 enum MenuSection
 {
 	MenuSectionPreownedInventory   = 10,
@@ -78,6 +80,10 @@ enum MenuSection
 	
 	[controllers addObject:loiInventory];
 	
+	UINavigationController * itemDetails = [self createCustomNavigationControllerFromViewController:[ItemDetailsController new]];
+	
+	[controllers addObject:itemDetails];
+	
 	[appDelegate.menuController setCenterViewController:controllers[0]];
 	
 	viewControllers = controllers;
@@ -137,18 +143,22 @@ enum MenuSection
 			break;
 			
 		case MenuSectionFeaturedInventory:
+			return;
 			navController = viewControllers[2];
 			break;
 			
 		case MenuSectionServiceCenter:
-			navController = viewControllers[0];
+			return;
+			navController = viewControllers[3];
 			break;
 			
 		case MenuSectionConsignmentProgram:
+			return;
 			navController = viewControllers[0];
 			break;
 			
 		case MenuSectionNotifications:
+			return;
 			navController = viewControllers[0];
 			break;
 			
@@ -161,10 +171,12 @@ enum MenuSection
 			break;
 			
 		case MenuSectionCreateAccount:
+			return;
 			navController = viewControllers[0];
 			break;
 			
 		case MenuSectionFAQ:
+			return;
 			navController = viewControllers[0];
 			break;
 			

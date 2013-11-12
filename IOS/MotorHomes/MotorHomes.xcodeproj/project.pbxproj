@@ -84,6 +84,26 @@
 		849E2C9C18312F5F00477E11 /* redButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2C9B18312F5F00477E11 /* redButton.png */; };
 		849E2C9F18312F7400477E11 /* RedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 849E2C9E18312F7300477E11 /* RedButton.m */; };
 		849E2CA118312FCF00477E11 /* busPrototype2.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CA018312FCF00477E11 /* busPrototype2.png */; };
+		849E2CA5183219C900477E11 /* ItemDetailsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 849E2CA3183219C600477E11 /* ItemDetailsController.m */; };
+		849E2CA6183219C900477E11 /* ItemDetailsController~iphone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CA4183219C800477E11 /* ItemDetailsController~iphone.xib */; };
+		849E2CA8183219EC00477E11 /* ItemDetailsController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CA7183219EC00477E11 /* ItemDetailsController~ipad.xib */; };
+		849E2CAB18321F0F00477E11 /* goldBorderButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CA918321F0E00477E11 /* goldBorderButton.png */; };
+		849E2CAC18321F0F00477E11 /* goldBorderButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CAA18321F0E00477E11 /* goldBorderButton@2x.png */; };
+		849E2CAF18321F3200477E11 /* GoldBorderButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 849E2CAE18321F3100477E11 /* GoldBorderButton.m */; };
+		849E2CB41832254A00477E11 /* pinkGradient.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CB01832254700477E11 /* pinkGradient.png */; };
+		849E2CB51832254A00477E11 /* redGradient.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CB11832254800477E11 /* redGradient.png */; };
+		849E2CB61832254A00477E11 /* watchVideoButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CB21832254800477E11 /* watchVideoButton.png */; };
+		849E2CB71832254A00477E11 /* zoomToolButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CB31832254900477E11 /* zoomToolButton.png */; };
+		849E2CB91832284000477E11 /* busPrototype1.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CB81832283F00477E11 /* busPrototype1.png */; };
+		849E2CBB18322D8100477E11 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 849E2CBA18322D7F00477E11 /* MessageUI.framework */; };
+		849E2CBE183243EA00477E11 /* icon57.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CBD183243E900477E11 /* icon57.png */; };
+		849E2CC0183243F700477E11 /* icon114.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CBF183243F600477E11 /* icon114.png */; };
+		849E2CC2183243FC00477E11 /* icon144.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CC1183243FB00477E11 /* icon144.png */; };
+		849E2CC4183243FF00477E11 /* icon72.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CC3183243FE00477E11 /* icon72.png */; };
+		849E2CC7183247D200477E11 /* radioButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CC5183247D000477E11 /* radioButton@2x.png */; };
+		849E2CC8183247D200477E11 /* radioButtonSelected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CC6183247D100477E11 /* radioButtonSelected@2x.png */; };
+		849E2CCB1832497600477E11 /* radioButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CC91832497400477E11 /* radioButton.png */; };
+		849E2CCC1832497600477E11 /* radioButtonSelected.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2CCA1832497400477E11 /* radioButtonSelected.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -196,6 +216,28 @@
 		849E2C9D18312F7300477E11 /* RedButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RedButton.h; sourceTree = "<group>"; };
 		849E2C9E18312F7300477E11 /* RedButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RedButton.m; sourceTree = "<group>"; };
 		849E2CA018312FCF00477E11 /* busPrototype2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = busPrototype2.png; sourceTree = "<group>"; };
+		849E2CA2183219C500477E11 /* ItemDetailsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemDetailsController.h; sourceTree = "<group>"; };
+		849E2CA3183219C600477E11 /* ItemDetailsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemDetailsController.m; sourceTree = "<group>"; };
+		849E2CA4183219C800477E11 /* ItemDetailsController~iphone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "ItemDetailsController~iphone.xib"; sourceTree = "<group>"; };
+		849E2CA7183219EC00477E11 /* ItemDetailsController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "ItemDetailsController~ipad.xib"; sourceTree = "<group>"; };
+		849E2CA918321F0E00477E11 /* goldBorderButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = goldBorderButton.png; sourceTree = "<group>"; };
+		849E2CAA18321F0E00477E11 /* goldBorderButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "goldBorderButton@2x.png"; sourceTree = "<group>"; };
+		849E2CAD18321F3100477E11 /* GoldBorderButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoldBorderButton.h; sourceTree = "<group>"; };
+		849E2CAE18321F3100477E11 /* GoldBorderButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoldBorderButton.m; sourceTree = "<group>"; };
+		849E2CB01832254700477E11 /* pinkGradient.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pinkGradient.png; sourceTree = "<group>"; };
+		849E2CB11832254800477E11 /* redGradient.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redGradient.png; sourceTree = "<group>"; };
+		849E2CB21832254800477E11 /* watchVideoButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = watchVideoButton.png; sourceTree = "<group>"; };
+		849E2CB31832254900477E11 /* zoomToolButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zoomToolButton.png; sourceTree = "<group>"; };
+		849E2CB81832283F00477E11 /* busPrototype1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = busPrototype1.png; sourceTree = "<group>"; };
+		849E2CBA18322D7F00477E11 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		849E2CBD183243E900477E11 /* icon57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon57.png; sourceTree = "<group>"; };
+		849E2CBF183243F600477E11 /* icon114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon114.png; sourceTree = "<group>"; };
+		849E2CC1183243FB00477E11 /* icon144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon144.png; sourceTree = "<group>"; };
+		849E2CC3183243FE00477E11 /* icon72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon72.png; sourceTree = "<group>"; };
+		849E2CC5183247D000477E11 /* radioButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "radioButton@2x.png"; sourceTree = "<group>"; };
+		849E2CC6183247D100477E11 /* radioButtonSelected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "radioButtonSelected@2x.png"; sourceTree = "<group>"; };
+		849E2CC91832497400477E11 /* radioButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = radioButton.png; sourceTree = "<group>"; };
+		849E2CCA1832497400477E11 /* radioButtonSelected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = radioButtonSelected.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -203,6 +245,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				849E2CBB18322D8100477E11 /* MessageUI.framework in Frameworks */,
 				849E2C641830EF7E00477E11 /* QuartzCore.framework in Frameworks */,
 				845D70FA182BA9D700A3757C /* MobileCoreServices.framework in Frameworks */,
 				845D7090182B9BA800A3757C /* UIKit.framework in Frameworks */,
@@ -217,6 +260,10 @@
 		845D7083182B9BA800A3757C = {
 			isa = PBXGroup;
 			children = (
+				849E2CC3183243FE00477E11 /* icon72.png */,
+				849E2CC1183243FB00477E11 /* icon144.png */,
+				849E2CBF183243F600477E11 /* icon114.png */,
+				849E2CBD183243E900477E11 /* icon57.png */,
 				845D7095182B9BA800A3757C /* MotorHomes */,
 				845D708E182B9BA800A3757C /* Frameworks */,
 				845D708D182B9BA800A3757C /* Products */,
@@ -237,6 +284,7 @@
 				845D70C4182BA58F00A3757C /* MFSideMenu */,
 				845D70CC182BA58F00A3757C /* SBJSON */,
 				845D70F9182BA9D700A3757C /* MobileCoreServices.framework */,
+				849E2CBA18322D7F00477E11 /* MessageUI.framework */,
 				845D708F182B9BA800A3757C /* UIKit.framework */,
 				845D7091182B9BA800A3757C /* Foundation.framework */,
 				845D7093182B9BA800A3757C /* CoreGraphics.framework */,
@@ -250,6 +298,7 @@
 			children = (
 				845D709E182B9BA800A3757C /* AppDelegate.h */,
 				845D709F182B9BA800A3757C /* AppDelegate.m */,
+				849E2CBC183238A600477E11 /* ItemDetailsController */,
 				849E2C791831005200477E11 /* InventoryController */,
 				849E2C56182CF8DE00477E11 /* SignInController */,
 				849E2C52182CF46000477E11 /* LeftMenu */,
@@ -317,6 +366,7 @@
 			isa = PBXGroup;
 			children = (
 				849E2CA018312FCF00477E11 /* busPrototype2.png */,
+				849E2CB81832283F00477E11 /* busPrototype1.png */,
 				849E2C8418311CE500477E11 /* busPrototype.png */,
 				849E2C8518311CE500477E11 /* logoPrototype.png */,
 				845D710C182BC0A700A3757C /* Default-568h@2x.png */,
@@ -350,8 +400,18 @@
 				849E2C5C182D160B00477E11 /* menuButton.png */,
 				849E2C6D1830F6E600477E11 /* goldButton.png */,
 				849E2C6B1830F4D900477E11 /* goldButton@2x.png */,
+				849E2CA918321F0E00477E11 /* goldBorderButton.png */,
+				849E2CAA18321F0E00477E11 /* goldBorderButton@2x.png */,
 				849E2C9B18312F5F00477E11 /* redButton.png */,
 				849E2C9918312F2000477E11 /* redButton@2x.png */,
+				849E2CC91832497400477E11 /* radioButton.png */,
+				849E2CC5183247D000477E11 /* radioButton@2x.png */,
+				849E2CCA1832497400477E11 /* radioButtonSelected.png */,
+				849E2CC6183247D100477E11 /* radioButtonSelected@2x.png */,
+				849E2CB01832254700477E11 /* pinkGradient.png */,
+				849E2CB11832254800477E11 /* redGradient.png */,
+				849E2CB21832254800477E11 /* watchVideoButton.png */,
+				849E2CB31832254900477E11 /* zoomToolButton.png */,
 			);
 			path = Images;
 			sourceTree = SOURCE_ROOT;
@@ -369,6 +429,8 @@
 				845D7106182BBDDB00A3757C /* DBView.m */,
 				849E2C651830EFDB00477E11 /* GoldButton.h */,
 				849E2C661830EFDB00477E11 /* GoldButton.m */,
+				849E2CAD18321F3100477E11 /* GoldBorderButton.h */,
+				849E2CAE18321F3100477E11 /* GoldBorderButton.m */,
 				849E2C9D18312F7300477E11 /* RedButton.h */,
 				849E2C9E18312F7300477E11 /* RedButton.m */,
 				849E2C681830F00000477E11 /* GoldTextField.h */,
@@ -415,6 +477,17 @@
 				849E2C82183119C600477E11 /* LOICell.xib */,
 			);
 			name = InventoryController;
+			sourceTree = "<group>";
+		};
+		849E2CBC183238A600477E11 /* ItemDetailsController */ = {
+			isa = PBXGroup;
+			children = (
+				849E2CA2183219C500477E11 /* ItemDetailsController.h */,
+				849E2CA3183219C600477E11 /* ItemDetailsController.m */,
+				849E2CA4183219C800477E11 /* ItemDetailsController~iphone.xib */,
+				849E2CA7183219EC00477E11 /* ItemDetailsController~ipad.xib */,
+			);
+			name = ItemDetailsController;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -512,6 +585,23 @@
 				849E2C9A18312F2000477E11 /* redButton@2x.png in Resources */,
 				849E2C9C18312F5F00477E11 /* redButton.png in Resources */,
 				849E2CA118312FCF00477E11 /* busPrototype2.png in Resources */,
+				849E2CA6183219C900477E11 /* ItemDetailsController~iphone.xib in Resources */,
+				849E2CA8183219EC00477E11 /* ItemDetailsController~ipad.xib in Resources */,
+				849E2CAB18321F0F00477E11 /* goldBorderButton.png in Resources */,
+				849E2CAC18321F0F00477E11 /* goldBorderButton@2x.png in Resources */,
+				849E2CB41832254A00477E11 /* pinkGradient.png in Resources */,
+				849E2CB51832254A00477E11 /* redGradient.png in Resources */,
+				849E2CB61832254A00477E11 /* watchVideoButton.png in Resources */,
+				849E2CB71832254A00477E11 /* zoomToolButton.png in Resources */,
+				849E2CB91832284000477E11 /* busPrototype1.png in Resources */,
+				849E2CBE183243EA00477E11 /* icon57.png in Resources */,
+				849E2CC0183243F700477E11 /* icon114.png in Resources */,
+				849E2CC2183243FC00477E11 /* icon144.png in Resources */,
+				849E2CC4183243FF00477E11 /* icon72.png in Resources */,
+				849E2CC7183247D200477E11 /* radioButton@2x.png in Resources */,
+				849E2CC8183247D200477E11 /* radioButtonSelected@2x.png in Resources */,
+				849E2CCB1832497600477E11 /* radioButton.png in Resources */,
+				849E2CCC1832497600477E11 /* radioButtonSelected.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -550,6 +640,8 @@
 				849E2C7F1831197200477E11 /* LOICell.m in Sources */,
 				849E2C8C183120F300477E11 /* LBCell.m in Sources */,
 				849E2C9F18312F7400477E11 /* RedButton.m in Sources */,
+				849E2CA5183219C900477E11 /* ItemDetailsController.m in Sources */,
+				849E2CAF18321F3200477E11 /* GoldBorderButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
