@@ -84,7 +84,7 @@ enum MenuSection
 	
 	[controllers addObject:itemDetails];
 	
-	[appDelegate.menuController setCenterViewController:controllers[0]];
+	[appDelegate.menuController setCenterViewController:lomInventory];
 	
 	viewControllers = controllers;
 }
