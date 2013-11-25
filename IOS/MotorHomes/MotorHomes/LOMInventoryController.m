@@ -33,6 +33,7 @@ enum filterType
 @interface LOMInventoryController ()
 {
 	IBOutlet UITableView *table;
+	IBOutlet UITableView *tableFilteredIpad;
 	NSArray * inventories;
 	NSArray * inventoriesFiltered;
 	int segmentType;
@@ -53,6 +54,18 @@ enum filterType
 
 @implementation LOMInventoryController
 
+-(void)getListOfInventories
+{
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://mot-stage.herokuapp.com/"]];
+	[httpClient setAllowsInvalidSSLCertificate:YES];
+	
+	[httpClient getPath:@"list?is_featured=no&offset=0&amount=5" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSLog(@"%@", [responseObject JSONValue]);
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"Error: %@", error);
+	}];
+}
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -71,16 +84,24 @@ enum filterType
 	
 	self.rightNavButtonImage = [UIImage imageNamed:@"filterButton"];
 	
-	segmentType = segmentByMake;
-	filterType = filterAll;
-	
 	inventories = @[@{@"image" : [UIImage imageNamed:@"busPrototype"], @"logoImage" : [UIImage imageNamed:@"logoPrototype"]},
+				    @{@"image" : [UIImage imageNamed:@"busPrototype"], @"logoImage" : [UIImage imageNamed:@"logoPrototype"]},
 				    @{@"image" : [UIImage imageNamed:@"busPrototype"], @"logoImage" : [UIImage imageNamed:@"logoPrototype"]},
 				    @{@"image" : [UIImage imageNamed:@"busPrototype"], @"logoImage" : [UIImage imageNamed:@"logoPrototype"]}];
 	
 	inventoriesFiltered = @[@{@"image" : [UIImage imageNamed:@"busPrototype2"], @"name" : @"2002 FORETRAVEL U320 42'", @"price" : @"$219,500"},
 						    @{@"image" : [UIImage imageNamed:@"busPrototype2"], @"name" : @"2002 FORETRAVEL U320 42'", @"price" : @"$219,500"},
+						    @{@"image" : [UIImage imageNamed:@"busPrototype2"], @"name" : @"2002 FORETRAVEL U320 42'", @"price" : @"$219,500"},
 						    @{@"image" : [UIImage imageNamed:@"busPrototype2"], @"name" : @"2002 FORETRAVEL U320 42'", @"price" : @"$219,500"}];
+	
+	if(!IS_IPAD)
+	   [self segmentChanged:byMakeButton];
+	else
+		[self segmentChanged:featuredButton];
+	
+	filterType = filterAll;
+	
+	[self getListOfInventories];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -125,7 +146,10 @@ enum filterType
 	{
 		segmentType = sender.tag;
 		
-		[table reloadData];
+		if(!IS_IPAD)
+			[table reloadData];
+		else
+			[tableFilteredIpad reloadData];
 	}
 	
 	//Show/hide right navigation button
@@ -150,7 +174,10 @@ enum filterType
 		
 		[self rightNavButtonPressed];
 		
-		//[table reloadData];
+//		if(!IS_IPAD)
+//			[table reloadData];
+//		else
+//			[tableFilteredIpad reloadData];
 	}
 }
 
@@ -171,15 +198,25 @@ enum filterType
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	if(segmentType == segmentByMake)
-		return 145;
+	if(!IS_IPAD)
+	{
+		if(segmentType == segmentByMake)
+			return 145;
+	}
+	else
+	{
+		if(tableView == table)
+			return 145;
+		else
+			return 330;
+	}
 	
 	return 180;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	if(segmentType == segmentByMake)
+	if(segmentType == segmentByMake || (IS_IPAD && tableView == table))
 	{
 		static NSString *CellIdentifier = @"CellLOM";
 		
@@ -189,6 +226,9 @@ enum filterType
 			//если ячейка не найдена - создаем новую
 			cell = [[[NSBundle mainBundle] loadNibNamed:@"LOMCell"owner:self options:nil] objectAtIndex:0];
 			cell.selectionStyle = UITableViewCellSelectionStyleNone;
+			
+			if(IS_IPAD)
+				cell.selectionStyle = UITableViewCellSelectionStyleGray;
 		}
 		
 		NSDictionary* dict = inventories[indexPath.row];
@@ -222,10 +262,18 @@ enum filterType
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	if(segmentType == segmentByMake)
-		[self.navigationController pushViewController:[LOIInventoryController new] animated:YES];
+	if(!IS_IPAD)
+	{
+		if(segmentType == segmentByMake)
+			[self.navigationController pushViewController:[LOIInventoryController new] animated:YES];
+		else
+			[self.navigationController pushViewController:[ItemDetailsController new] animated:YES];
+	}
 	else
-		[self.navigationController pushViewController:[ItemDetailsController new] animated:YES];
+	{
+		if(tableView == tableFilteredIpad)
+			[self.navigationController pushViewController:[ItemDetailsController new] animated:YES];
+	}
 }
 
 - (void)viewDidUnload {
@@ -240,6 +288,7 @@ enum filterType
 	filterCountryButton = nil;
 	filterNewellButton = nil;
 	filterAllButton = nil;
+	tableFilteredIpad = nil;
 	[super viewDidUnload];
 }
 @end

@@ -267,6 +267,7 @@ enum MenuSection
     CGContextDrawImage(bitmap, CGRectMake(0, 0, width, height), imageRef);
     CGImageRef ref = CGBitmapContextCreateImage(bitmap);
     UIImage *result = [UIImage imageWithCGImage:ref];
+	CGColorSpaceRelease(colorSpace);
     CGContextRelease(bitmap);
     CGImageRelease(ref);
 	

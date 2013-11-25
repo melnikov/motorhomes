@@ -11,6 +11,10 @@
 #ifdef __OBJC__
 	#import <UIKit/UIKit.h>
 	#import <Foundation/Foundation.h>
+	#import <SystemConfiguration/SystemConfiguration.h>
+	#import <MobileCoreServices/MobileCoreServices.h>
+	#import "SBJson.h"
+	#import "AFNetworking.h"
 	#import "AppDelegate.h"
 	#import "LBView.h"
 	#import "DBView.h"
@@ -30,3 +34,6 @@
 #define appDelegate							((AppDelegate *)[UIApplication sharedApplication].delegate)
 #define RGB(r, g, b)                        [UIColor colorWithRed:(r)/255.f green:(g)/255.f blue:(b)/255.f alpha:1.f]
 #define RGBA(r, g, b, a)                    [UIColor colorWithRed:(r)/255.f green:(g)/255.f blue:(b)/255.f alpha:a / 1.f]
+#define IS_IPAD								UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
+
+#define API_URL_STRING						@"http://mot-stage.herokuapp.com/"

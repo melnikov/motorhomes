@@ -79,7 +79,7 @@ typedef enum {
     
     self.menuContainerView = [[UIView alloc] init];
     self.menuState = MFSideMenuStateClosed;
-    self.menuWidth = 270.0f;
+    self.menuWidth = 256.0f; //270
     self.menuSlideAnimationFactor = 3.0f;
     self.menuAnimationDefaultDuration = 0.2f;
     self.menuAnimationMaxDuration = 0.4f;
@@ -122,6 +122,11 @@ typedef enum {
         [self addGestureRecognizers];
         [self.shadow draw];
         
+		if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))
+		{
+			[self setMenuState:MFSideMenuStateLeftMenuOpen];
+		}
+		
         self.viewHasAppeared = YES;
     }
 }
@@ -164,6 +169,16 @@ typedef enum {
     [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
     
     [self.shadow shadowedViewWillRotate];
+	
+	///////////////
+	if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+	{
+		if(UIDeviceOrientationIsLandscape(toInterfaceOrientation))
+			[self setMenuState:MFSideMenuStateLeftMenuOpen];
+		else
+			[self setMenuState:MFSideMenuStateClosed];
+	}
+	////////////////
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -330,6 +345,14 @@ typedef enum {
     
     switch (menuState) {
         case MFSideMenuStateClosed: {
+			
+			///////////////
+			if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))
+			{
+				return;
+			}
+			///////////////
+			
             [self sendStateEventNotification:MFSideMenuStateEventMenuWillClose];
             [self closeSideMenuCompletion:^{
                 [self.leftMenuViewController view].hidden = YES;
@@ -485,7 +508,7 @@ typedef enum {
 #pragma mark - MFSideMenuPanMode
 
 - (BOOL) centerViewControllerPanEnabled {
-    return ((self.panMode & MFSideMenuPanModeCenterViewController) == MFSideMenuPanModeCenterViewController);
+    return (((self.panMode & MFSideMenuPanModeCenterViewController) == MFSideMenuPanModeCenterViewController));
 }
 
 - (BOOL) sideMenuPanEnabled {
@@ -497,6 +520,11 @@ typedef enum {
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+	////////////////
+	if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))
+		return NO;
+	////////////////
+	
     if([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]] &&
        self.menuState != MFSideMenuStateClosed) return YES;
     
@@ -530,6 +558,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 // this method handles any pan event
 // and sets the navigation controller's frame as needed
 - (void) handlePan:(UIPanGestureRecognizer *)recognizer {
+	
     UIView *view = [self.centerViewController view];
     
 	if(recognizer.state == UIGestureRecognizerStateBegan) {
@@ -619,6 +648,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 }
 
 - (void) handleLeftPan:(UIPanGestureRecognizer *)recognizer {
+
     if(!self.rightMenuViewController && self.menuState == MFSideMenuStateClosed) return;
     
     UIView *view = [self.centerViewController view];
@@ -680,7 +710,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if([self.centerViewController respondsToSelector:@selector(viewControllers)]) {
         NSArray *viewControllers = [self.centerViewController viewControllers];
         for(UIViewController* viewController in viewControllers) {
-            viewController.view.userInteractionEnabled = (self.menuState == MFSideMenuStateClosed);
+			///////////////////
+			BOOL isLandscapePad = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation));
+			///////////////////
+			
+            viewController.view.userInteractionEnabled = (self.menuState == MFSideMenuStateClosed || isLandscapePad);
         }
     }
 }

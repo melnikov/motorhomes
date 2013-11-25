@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2011 Stig Brautaset. All rights reserved.
+ Copyright (C) 2009 Stig Brautaset. All rights reserved.
  
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are met:
@@ -27,30 +27,53 @@
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#if !__has_feature(objc_arc)
-#error "This source file must be compiled with ARC enabled!"
-#endif
+#import <Foundation/Foundation.h>
 
-#import "SBJsonStreamWriterAccumulator.h"
+#pragma mark JSON Writing
+
+/// Adds JSON generation to NSObject
+@interface NSObject (NSObject_SBJsonWriting)
+
+/**
+ @brief Encodes the receiver into a JSON string
+ 
+ Although defined as a category on NSObject it is only defined for NSArray and NSDictionary.
+ 
+ @return the receiver encoded in JSON, or nil on error.
+ 
+ @see @ref objc2json
+ */
+- (NSString *)JSONRepresentation;
+
+@end
 
 
-@implementation SBJsonStreamWriterAccumulator
+#pragma mark JSON Parsing
 
-@synthesize data;
+/// Adds JSON parsing methods to NSString
+@interface NSString (NSString_SBJsonParsing)
 
-- (id)init {
-    self = [super init];
-    if (self) {
-        data = [[NSMutableData alloc] initWithCapacity:8096u];
-    }
-    return self;
-}
+/**
+ @brief Decodes the receiver's JSON text
+ 
+ @return the NSDictionary or NSArray represented by the receiver, or nil on error.
+ 
+ @see @ref json2objc
+ */
+- (id)JSONValue;
 
+@end
 
-#pragma mark SBJsonStreamWriterDelegate
+/// Adds JSON parsing methods to NSData
+@interface NSData (NSData_SBJsonParsing)
 
-- (void)writer:(SBJsonStreamWriter *)writer appendBytes:(const void *)bytes length:(NSUInteger)length {
-    [data appendBytes:bytes length:length];
-}
+/**
+ @brief Decodes the receiver's JSON data
+ 
+ @return the NSDictionary or NSArray represented by the receiver, or nil on error.
+ 
+ @see @ref json2objc
+ */
+- (id)JSONValue;
 
 @end

@@ -10,4 +10,11 @@
 
 @implementation LOMCell
 
+-(void)awakeFromNib
+{
+	UIView *customColorView = [[UIView alloc] init];
+    customColorView.backgroundColor = RGBA(17, 17, 17, 0.4);
+    self.selectedBackgroundView =  customColorView;
+}
+
 @end
