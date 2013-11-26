@@ -34,7 +34,7 @@ enum filterType
 {
 	IBOutlet UITableView *table;
 	IBOutlet UITableView *tableFilteredIpad;
-	NSArray * inventories;
+	NSArray * inventoriesByMake;
 	NSArray * inventoriesFiltered;
 	int segmentType;
 	IBOutlet UIButton *allButton;
@@ -48,31 +48,90 @@ enum filterType
 	IBOutlet UIButton *filterForetravelButton;
 	IBOutlet UIButton *filterReducedPriceButton;
 	IBOutlet UIButton *filterNewestButton;
+	
+	AFHTTPClient *httpClient;
 }
 
 @end
 
 @implementation LOMInventoryController
 
--(void)getListOfInventories
+-(void)createHttpClient
 {
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://mot-stage.herokuapp.com/"]];
-	[httpClient setAllowsInvalidSSLCertificate:YES];
+	if(!httpClient)
+	{
+		httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://mot-stage.herokuapp.com/"]];
+		[httpClient setAllowsInvalidSSLCertificate:YES];
+	}
+}
+
+-(void)getInventories
+{
+	[MBProgressHUD showHUDAddedTo:[[[UIApplication sharedApplication] delegate] window] animated:YES];
 	
-	[httpClient getPath:@"list?is_featured=no&offset=0&amount=5" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[self createHttpClient];
+	
+	[self segmentChanged:allButton];
+	[self filterChanged:filterAllButton];
+	
+	[[httpClient operationQueue] cancelAllOperations];
+	
+	[self getListOfInventoriesFeatured:NO offset:0 count:5];
+	[self getListOfInventoriesByMake];
+}
+
+-(void)hideHUD
+{
+	if([[httpClient operationQueue] operationCount] == 0)
+	{
+		[MBProgressHUD hideAllHUDsForView:[[[UIApplication sharedApplication] delegate] window] animated:YES];
+		[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+	}
+}
+
+-(void)getListOfInventoriesFeatured:(BOOL)featured offset:(int)offset count:(int)count
+{
+	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+	
+	NSString * path = [NSString stringWithFormat:@"/client/inventory_selections.json?is_featured=%@&amount=%d&offset=%d", (featured ? @"yes" : @"no"), count, offset];
+	
+	[httpClient getPath:path parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
+	{
+		if ([operation isCancelled]) return;
 		NSLog(@"%@", [responseObject JSONValue]);
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		inventoriesFiltered = [responseObject JSONValue];
+		if(!IS_IPAD)
+			[table reloadData];
+		else
+			[tableFilteredIpad reloadData];
+		[self hideHUD];
+	}
+	failure:^(AFHTTPRequestOperation *operation, NSError *error)
+	{
 		NSLog(@"Error: %@", error);
+		[self hideHUD];
 	}];
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+-(void)getListOfInventoriesByMake
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
+	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+	
+	NSString * path = [NSString stringWithFormat:@"front/vehicles/makes/all.json"];
+	
+	[httpClient getPath:path parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
+	{
+		if ([operation isCancelled]) return;
+		NSLog(@"%@", [responseObject JSONValue]);
+		inventoriesByMake = [responseObject JSONValue];
+		[table reloadData];
+		[self hideHUD];
+	}
+	failure:^(AFHTTPRequestOperation *operation, NSError *error)
+	{
+		NSLog(@"Error: %@", error);
+		[self hideHUD];
+	}];
 }
 
 - (void)viewDidLoad
@@ -84,24 +143,7 @@ enum filterType
 	
 	self.rightNavButtonImage = [UIImage imageNamed:@"filterButton"];
 	
-	inventories = @[@{@"image" : [UIImage imageNamed:@"busPrototype"], @"logoImage" : [UIImage imageNamed:@"logoPrototype"]},
-				    @{@"image" : [UIImage imageNamed:@"busPrototype"], @"logoImage" : [UIImage imageNamed:@"logoPrototype"]},
-				    @{@"image" : [UIImage imageNamed:@"busPrototype"], @"logoImage" : [UIImage imageNamed:@"logoPrototype"]},
-				    @{@"image" : [UIImage imageNamed:@"busPrototype"], @"logoImage" : [UIImage imageNamed:@"logoPrototype"]}];
-	
-	inventoriesFiltered = @[@{@"image" : [UIImage imageNamed:@"busPrototype2"], @"name" : @"2002 FORETRAVEL U320 42'", @"price" : @"$219,500"},
-						    @{@"image" : [UIImage imageNamed:@"busPrototype2"], @"name" : @"2002 FORETRAVEL U320 42'", @"price" : @"$219,500"},
-						    @{@"image" : [UIImage imageNamed:@"busPrototype2"], @"name" : @"2002 FORETRAVEL U320 42'", @"price" : @"$219,500"},
-						    @{@"image" : [UIImage imageNamed:@"busPrototype2"], @"name" : @"2002 FORETRAVEL U320 42'", @"price" : @"$219,500"}];
-	
-	if(!IS_IPAD)
-	   [self segmentChanged:byMakeButton];
-	else
-		[self segmentChanged:featuredButton];
-	
-	filterType = filterAll;
-	
-	[self getListOfInventories];
+	[self getInventories];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -124,20 +166,28 @@ enum filterType
 - (void)rightNavButtonPressed
 {
 	if(filterView.frame.size.height == 0)
-		[UIView animateWithDuration:0.2 animations:^{
-			filterView.frame = CGRectMake(filterView.frame.origin.x, filterView.frame.origin.y, filterView.frame.size.width, 504);
+		[UIView animateWithDuration:0.15 animations:^{
+			filterView.frame = CGRectMake(filterView.frame.origin.x, filterView.frame.origin.y, filterView.frame.size.width, 200);
+		} completion:^(BOOL finished) {
+			filterView.frame = CGRectMake(filterView.frame.origin.x, filterView.frame.origin.y, filterView.frame.size.width, 1000);
 		}];
 	else
-		[UIView animateWithDuration:0.2 animations:^{
+	{
+		filterView.frame = CGRectMake(filterView.frame.origin.x, filterView.frame.origin.y, filterView.frame.size.width, 200);
+		
+		[UIView animateWithDuration:0.15 animations:^{
 			filterView.frame = CGRectMake(filterView.frame.origin.x, filterView.frame.origin.y, filterView.frame.size.width, 0);
 		}];
+	}
 }
 
-- (IBAction)closeFilterPressed {
+- (IBAction)closeFilterPressed
+{
 	[self rightNavButtonPressed];
 }
 
-- (IBAction)segmentChanged:(UIButton *)sender {
+- (IBAction)segmentChanged:(UIButton *)sender
+{
 	allButton.selected = (sender == allButton);
 	byMakeButton.selected = (sender == byMakeButton);
 	featuredButton.selected = (sender == featuredButton);
@@ -146,17 +196,23 @@ enum filterType
 	{
 		segmentType = sender.tag;
 		
-		if(!IS_IPAD)
+		if([inventoriesByMake count] && [inventoriesFiltered count])
+			[[httpClient operationQueue] cancelAllOperations];
+		
+		//Show/hide right navigation button
+		if(segmentType == segmentByMake)
+		{
+			[self.navigationController.navigationBar viewWithTag:20].hidden = YES;
+			
 			[table reloadData];
+		}
 		else
-			[tableFilteredIpad reloadData];
+		{
+			[self.navigationController.navigationBar viewWithTag:20].hidden = NO;
+			
+			[self getListOfInventoriesFeatured:segmentType offset:0 count:5];
+		}
 	}
-	
-	//Show/hide right navigation button
-	if(segmentType == segmentByMake)
-		[self.navigationController.navigationBar viewWithTag:20].hidden = YES;
-	else
-		[self.navigationController.navigationBar viewWithTag:20].hidden = NO;
 }
 
 - (IBAction)filterChanged:(UIButton *)sender
@@ -172,7 +228,8 @@ enum filterType
 	{
 		filterType = sender.tag;
 		
-		[self rightNavButtonPressed];
+		if(filterView.frame.size.height != 0)
+			[self rightNavButtonPressed];
 		
 //		if(!IS_IPAD)
 //			[table reloadData];
@@ -190,8 +247,8 @@ enum filterType
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-	if(segmentType == segmentByMake)
-		return inventories.count;
+	if(segmentType == segmentByMake || (IS_IPAD && tableView == table))
+		return inventoriesByMake.count;
 	
 	return inventoriesFiltered.count;
 }
@@ -231,7 +288,7 @@ enum filterType
 				cell.selectionStyle = UITableViewCellSelectionStyleGray;
 		}
 		
-		NSDictionary* dict = inventories[indexPath.row];
+		NSDictionary* dict = inventoriesByMake[indexPath.row];
 		
 		cell.itemImageView.image = [dict valueForKey:@"image"];
 		cell.logoImageView.image = [dict valueForKey:@"logoImage"];
@@ -252,9 +309,15 @@ enum filterType
 		
 		NSDictionary* dict = inventoriesFiltered[indexPath.row];
 		
-		cell.itemImage.image = [dict valueForKey:@"image"];
-		cell.nameLabel.text = [dict valueForKey:@"name"];
-		[cell.priceButton setTitle:[dict valueForKey:@"price"] forState:UIControlStateNormal];
+		NSString * imageUrl = [dict valueForKeyPath:@"vehicle.client_list_image"];
+		if(imageUrl)
+			[cell.itemImage setImageWithURL:[NSURL URLWithString:imageUrl]];
+		
+		cell.nameLabel.text = [dict valueForKeyPath:@"vehicle.full_name"];
+		
+		NSString * price = [@"$" stringByAppendingString:[dict valueForKeyPath:@"vehicle.final_price"]];
+		if(price)
+			[cell.priceButton setTitle:price forState:UIControlStateNormal];
 		
 		return cell;
 	}
