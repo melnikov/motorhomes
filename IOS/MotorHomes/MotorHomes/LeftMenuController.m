@@ -7,11 +7,10 @@
 //
 
 #import "LeftMenuController.h"
-#import "SignInController.h"
 #import "LOMInventoryController.h"
-#import "LOIInventoryController.h"
-
-#import "ItemDetailsController.h"
+#import "SignInController.h"
+#import "RegisterController.h"
+#import "FaqController.h"
 
 enum MenuSection
 {
@@ -68,21 +67,21 @@ enum MenuSection
 {
 	NSMutableArray * controllers = [NSMutableArray new];
 	
-	UINavigationController * signIn = [self createCustomNavigationControllerFromViewController:[SignInController new]];
-	
-	[controllers addObject:signIn];
-	
 	UINavigationController * lomInventory = [self createCustomNavigationControllerFromViewController:[LOMInventoryController new]];
 	
 	[controllers addObject:lomInventory];
 	
-	UINavigationController * loiInventory = [self createCustomNavigationControllerFromViewController:[LOIInventoryController new]];
+	UINavigationController * signIn = [self createCustomNavigationControllerFromViewController:[SignInController new]];
 	
-	[controllers addObject:loiInventory];
+	[controllers addObject:signIn];
 	
-	UINavigationController * itemDetails = [self createCustomNavigationControllerFromViewController:[ItemDetailsController new]];
+	UINavigationController * regController = [self createCustomNavigationControllerFromViewController:[RegisterController new]];
 	
-	[controllers addObject:itemDetails];
+	[controllers addObject:regController];
+	
+	UINavigationController * faqController = [self createCustomNavigationControllerFromViewController:[FaqController new]];
+	
+	[controllers addObject:faqController];
 	
 	[appDelegate.menuController setCenterViewController:lomInventory];
 	
@@ -139,17 +138,17 @@ enum MenuSection
 	
 	switch (sender.tag) {
 		case MenuSectionPreownedInventory:
-			navController = viewControllers[1];
+			navController = viewControllers[0];
 			break;
 			
 		case MenuSectionFeaturedInventory:
-			return;
-			navController = viewControllers[2];
+			navController = viewControllers[0];
+			[(LOMInventoryController*)navController.viewControllers[0] showFeatured];
 			break;
 			
 		case MenuSectionServiceCenter:
 			return;
-			navController = viewControllers[3];
+			navController = viewControllers[0];
 			break;
 			
 		case MenuSectionConsignmentProgram:
@@ -167,17 +166,15 @@ enum MenuSection
 			break;
 			
 		case MenuSectionSignIn:
-			navController = viewControllers[0];
+			navController = viewControllers[1];
 			break;
 			
 		case MenuSectionCreateAccount:
-			return;
-			navController = viewControllers[0];
+			navController = viewControllers[2];
 			break;
 			
 		case MenuSectionFAQ:
-			return;
-			navController = viewControllers[0];
+			navController = viewControllers[3];
 			break;
 			
 		default:

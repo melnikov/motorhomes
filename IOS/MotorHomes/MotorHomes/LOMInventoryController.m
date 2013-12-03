@@ -49,6 +49,8 @@ enum filterType
 	IBOutlet UIButton *filterReducedPriceButton;
 	IBOutlet UIButton *filterNewestButton;
 	
+	BOOL isByMakeData;
+	
 	AFHTTPClient *httpClient;
 }
 
@@ -76,8 +78,9 @@ enum filterType
 	
 	[[httpClient operationQueue] cancelAllOperations];
 	
-	[self getListOfInventoriesFeatured:NO offset:0 count:5];
+	[self getListOfInventoriesFeatured:NO offset:0 count:1000];
 	[self getListOfInventoriesByMake];
+	;
 }
 
 -(void)hideHUD
@@ -91,19 +94,29 @@ enum filterType
 
 -(void)getListOfInventoriesFeatured:(BOOL)featured offset:(int)offset count:(int)count
 {
+	isByMakeData = NO;
+	
 	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
 	
-	NSString * path = [NSString stringWithFormat:@"/client/inventory_selections.json?is_featured=%@&amount=%d&offset=%d", (featured ? @"yes" : @"no"), count, offset];
+	NSString * path = [NSString stringWithFormat:@"client/inventory_selections.json?is_featured=%@&amount=%d&offset=%d", (featured ? @"yes" : @"no"), count, offset];
 	
 	[httpClient getPath:path parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
 	{
 		if ([operation isCancelled]) return;
-		NSLog(@"%@", [responseObject JSONValue]);
+		//NSLog(@"%@", [responseObject JSONValue]);
 		inventoriesFiltered = [responseObject JSONValue];
 		if(!IS_IPAD)
+		{
+			//[table scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+			
 			[table reloadData];
+		}
 		else
+		{
+			//[tableFilteredIpad scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+			
 			[tableFilteredIpad reloadData];
+		}
 		[self hideHUD];
 	}
 	failure:^(AFHTTPRequestOperation *operation, NSError *error)
@@ -122,8 +135,9 @@ enum filterType
 	[httpClient getPath:path parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
 	{
 		if ([operation isCancelled]) return;
-		NSLog(@"%@", [responseObject JSONValue]);
+		//NSLog(@"%@", [responseObject JSONValue]);
 		inventoriesByMake = [responseObject JSONValue];
+		//[table scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 		[table reloadData];
 		[self hideHUD];
 	}
@@ -134,6 +148,87 @@ enum filterType
 	}];
 }
 
+-(void)getListOfInventoriesModeldByMakeName:(NSString*)makeName
+{
+	if(IS_IPAD)
+	{
+		isByMakeData = YES;
+		
+		allButton.selected = NO;
+	}
+	
+	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+	
+	NSString * path = [NSString stringWithFormat:@"front/vehicles/models/%@/all.json", makeName];
+	
+	[httpClient getPath:path parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
+	 {
+		 if ([operation isCancelled]) return;
+		 NSArray * models = [responseObject JSONValue];
+		 
+		 if(models.count <= 0)
+			[self hideHUD];
+		 
+		 NSMutableArray * inventoriesByMakeName = [NSMutableArray new];
+		 
+		 for (int i = 0; i < models.count; i++)
+		 {
+			 NSString * modelName = [models[i] valueForKey:@"name"];
+			 
+			 NSString * path = [NSString stringWithFormat:@"front/vehicles/inventory/%@/%@/all.json", makeName, modelName];
+			 
+			 [httpClient getPath:path parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
+			 {
+				 if ([operation isCancelled]) return;
+				 
+				 [inventoriesByMakeName addObjectsFromArray:[responseObject JSONValue]];
+				 
+				 if(i == models.count - 1)
+				 {
+					 [self hideHUD];
+					 
+					 if(IS_IPAD)
+					 {
+						 inventoriesFiltered = inventoriesByMakeName;
+						 
+						 //[tableFilteredIpad scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+						 
+						 [tableFilteredIpad reloadData];
+						 
+						 [self hideHUD];
+					 }
+					 else
+					 {
+						 [self.navigationController pushViewController:[[LOIInventoryController alloc] initWithInventories:inventoriesByMakeName] animated:YES];
+					 }
+				 }
+			 }
+			 failure:^(AFHTTPRequestOperation *operation, NSError *error)
+			 {
+				  NSLog(@"Error: %@", error);
+				  [self hideHUD];
+				 
+				 inventoriesFiltered = [NSArray new];
+				 
+				 //[tableFilteredIpad scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+				 
+				 [tableFilteredIpad reloadData];
+			 }];
+		 }
+	 }
+	failure:^(AFHTTPRequestOperation *operation, NSError *error)
+	 {
+		 NSLog(@"Error: %@", error);
+		 [self hideHUD];
+		 
+		 inventoriesFiltered = [NSArray new];
+		 
+		 //[tableFilteredIpad scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+		 
+		  [tableFilteredIpad reloadData];
+	 }];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -142,6 +237,8 @@ enum filterType
 	self.title = @"INVENTORY";
 	
 	self.rightNavButtonImage = [UIImage imageNamed:@"filterButton"];
+	
+	isByMakeData = NO;
 	
 	[self getInventories];
 }
@@ -186,14 +283,19 @@ enum filterType
 	[self rightNavButtonPressed];
 }
 
+-(void)showFeatured
+{
+	[self segmentChanged:featuredButton];
+}
+
 - (IBAction)segmentChanged:(UIButton *)sender
 {
-	allButton.selected = (sender == allButton);
-	byMakeButton.selected = (sender == byMakeButton);
-	featuredButton.selected = (sender == featuredButton);
-	
-	if(segmentType != sender.tag)
+	if(segmentType != sender.tag || !sender.selected)
 	{
+		allButton.selected = (sender == allButton);
+		byMakeButton.selected = (sender == byMakeButton);
+		featuredButton.selected = (sender == featuredButton);
+		
 		segmentType = sender.tag;
 		
 		if([inventoriesByMake count] && [inventoriesFiltered count])
@@ -204,10 +306,14 @@ enum filterType
 		{
 			[self.navigationController.navigationBar viewWithTag:20].hidden = YES;
 			
+			//[table scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+			
 			[table reloadData];
 		}
 		else
 		{
+			[tableFilteredIpad deselectRowAtIndexPath:[tableFilteredIpad indexPathForSelectedRow] animated:YES];
+			
 			[self.navigationController.navigationBar viewWithTag:20].hidden = NO;
 			
 			[self getListOfInventoriesFeatured:segmentType offset:0 count:5];
@@ -232,9 +338,17 @@ enum filterType
 			[self rightNavButtonPressed];
 		
 //		if(!IS_IPAD)
+//		{
+//			[table scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 //			[table reloadData];
+//		
+//		}
 //		else
+//		{
+//			[tableFilteredIpad scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 //			[tableFilteredIpad reloadData];
+//
+//	    }
 	}
 }
 
@@ -290,8 +404,9 @@ enum filterType
 		
 		NSDictionary* dict = inventoriesByMake[indexPath.row];
 		
-		cell.itemImageView.image = [dict valueForKey:@"image"];
+		//cell.itemImageView.image = [dict valueForKey:@"image"];
 		cell.logoImageView.image = [dict valueForKey:@"logoImage"];
+		cell.nameLabel.text = [dict valueForKey:@"name"];
 		
 		return cell;
 	}
@@ -307,17 +422,34 @@ enum filterType
 			cell.selectionStyle = UITableViewCellSelectionStyleNone;
 		}
 		
-		NSDictionary* dict = inventoriesFiltered[indexPath.row];
-		
-		NSString * imageUrl = [dict valueForKeyPath:@"vehicle.client_list_image"];
-		if(imageUrl)
-			[cell.itemImage setImageWithURL:[NSURL URLWithString:imageUrl]];
-		
-		cell.nameLabel.text = [dict valueForKeyPath:@"vehicle.full_name"];
-		
-		NSString * price = [@"$" stringByAppendingString:[dict valueForKeyPath:@"vehicle.final_price"]];
-		if(price)
-			[cell.priceButton setTitle:price forState:UIControlStateNormal];
+		if(!isByMakeData)
+		{
+			NSDictionary* dict = inventoriesFiltered[indexPath.row];
+			
+			NSString * imageUrl = [dict valueForKeyPath:@"vehicle.client_list_image"];
+			if(imageUrl)
+				[cell.itemImage setImageWithURL:[NSURL URLWithString:imageUrl]];
+			
+			cell.nameLabel.text = [dict valueForKeyPath:@"vehicle.full_name"];
+			
+			NSString * price = [@"$" stringByAppendingString:[dict valueForKeyPath:@"vehicle.final_price"]];
+			if(price)
+				[cell.priceButton setTitle:price forState:UIControlStateNormal];
+		}
+		else
+		{
+			NSDictionary* dict = inventoriesFiltered[indexPath.row];
+			
+			NSString * imageUrl = [dict valueForKeyPath:@"view_thumb_image"];
+			if(imageUrl)
+				[cell.itemImage setImageWithURL:[NSURL URLWithString:imageUrl]];
+			
+			cell.nameLabel.text = [dict valueForKeyPath:@"full_name"];
+			
+			NSString * price = [NSString stringWithFormat:@"$%d", [[dict valueForKey:@"price"] intValue]];
+			if(price)
+				[cell.priceButton setTitle:price forState:UIControlStateNormal];
+		}
 		
 		return cell;
 	}
@@ -328,14 +460,30 @@ enum filterType
 	if(!IS_IPAD)
 	{
 		if(segmentType == segmentByMake)
-			[self.navigationController pushViewController:[LOIInventoryController new] animated:YES];
+		{
+			[[httpClient operationQueue] cancelAllOperations];
+			
+			NSString * name = [inventoriesByMake[indexPath.row] valueForKey:@"url_name"];
+			
+			[self getListOfInventoriesModeldByMakeName:name];
+		}
 		else
-			[self.navigationController pushViewController:[ItemDetailsController new] animated:YES];
+			[self.navigationController pushViewController:[[ItemDetailsController alloc] initWithInventory:inventoriesFiltered[indexPath.row]] animated:YES];
 	}
 	else
 	{
 		if(tableView == tableFilteredIpad)
-			[self.navigationController pushViewController:[ItemDetailsController new] animated:YES];
+		{
+			[self.navigationController pushViewController:[[ItemDetailsController alloc] initWithInventory:inventoriesFiltered[indexPath.row]] animated:YES];
+		}
+		else
+		{
+			[[httpClient operationQueue] cancelAllOperations];
+			
+			NSString * name = [inventoriesByMake[indexPath.row] valueForKey:@"url_name"];
+			
+			[self getListOfInventoriesModeldByMakeName:name];
+		}
 	}
 }
 

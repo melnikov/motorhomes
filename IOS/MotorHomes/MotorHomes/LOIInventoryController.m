@@ -38,11 +38,12 @@ enum filterType
 
 @implementation LOIInventoryController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+-(id)initWithInventories:(NSArray*)_inventories
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+	self = [super init];
     if (self) {
         // Custom initialization
+		inventories = _inventories;
     }
     return self;
 }
@@ -57,10 +58,6 @@ enum filterType
 	self.rightNavButtonImage = [UIImage imageNamed:@"filterButton"];
 	
 	filterType = filterAll;
-	
-	inventories = @[@{@"image" : [UIImage imageNamed:@"busPrototype2"], @"name" : @"2002 FORETRAVEL U320 42'", @"price" : @"$219,500"},
-				 @{@"image" : [UIImage imageNamed:@"busPrototype2"], @"name" : @"2002 FORETRAVEL U320 42'", @"price" : @"$219,500"},
-				 @{@"image" : [UIImage imageNamed:@"busPrototype2"], @"name" : @"2002 FORETRAVEL U320 42'", @"price" : @"$219,500"}];
 }
 
 - (void)rightNavButtonPressed
@@ -124,16 +121,22 @@ enum filterType
 	
 	NSDictionary* dict = inventories[indexPath.row];
 	
-	cell.itemImage.image = [dict valueForKey:@"image"];
-	cell.nameLabel.text = [dict valueForKey:@"name"];
-	[cell.priceButton setTitle:[dict valueForKey:@"price"] forState:UIControlStateNormal];
+	NSString * imageUrl = [dict valueForKeyPath:@"view_thumb_image"];
+	if(imageUrl)
+		[cell.itemImage setImageWithURL:[NSURL URLWithString:imageUrl]];
+	
+	cell.nameLabel.text = [dict valueForKeyPath:@"full_name"];
+	
+	NSString * price = [NSString stringWithFormat:@"$%d", [[dict valueForKey:@"price"] intValue]];
+	if(price)
+		[cell.priceButton setTitle:price forState:UIControlStateNormal];
 	
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	[self.navigationController pushViewController:[ItemDetailsController new] animated:YES];
+	[self.navigationController pushViewController:[[ItemDetailsController alloc] initWithInventory:inventories[indexPath.row]] animated:YES];
 }
 
 @end

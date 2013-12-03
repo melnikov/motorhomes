@@ -8,6 +8,7 @@
 
 #import "SignInController.h"
 #import "LBView.h"
+#import "RegisterController.h"
 
 @interface SignInController ()
 
@@ -32,10 +33,9 @@
 	self.title = @"SIGN IN";
 }
 
-- (void)didReceiveMemoryWarning
+- (IBAction)registerNowPressed
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+	[self.navigationController pushViewController:[RegisterController new] animated:YES];
 }
 
 @end

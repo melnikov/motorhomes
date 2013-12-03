@@ -10,4 +10,6 @@
 
 @interface LOMInventoryController : BaseViewController <UITableViewDataSource, UITableViewDelegate>
 
+-(void)showFeatured;
+
 @end

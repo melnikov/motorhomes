@@ -7,29 +7,44 @@
 //
 
 #import "ItemDetailsController.h"
+#import "GalleryController.h"
 
 @interface ItemDetailsController ()
 {
 	IBOutlet UIButton *generalButton;
 	IBOutlet UIButton *specsButton;
 	IBOutlet UIButton *eqipmentButton;
+	IBOutlet UIImageView *oldPriceBack;
 	IBOutlet UILabel *oldPrice;
 	IBOutlet UILabel *newPrice;
 	IBOutlet UILabel *nameLabel;
 	IBOutlet UILabel *headerLabel;
 	IBOutlet UILabel *descriptionLabel;
 	IBOutlet UIScrollView *scroll;
+	IBOutlet UIImageView *imageView;
+	IBOutlet UIButton *videoButton;
+	IBOutlet UIButton *zoomButton;
+	
+	NSDictionary* inventory;
+	
+	AFHTTPClient * httpClient;
+	
+	NSArray * vechicleImages;
+	NSArray * vechicleOptions;
+	
+	IBOutlet UITextView *textView;
 }
 
 @end
 
 @implementation ItemDetailsController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+-(id)initWithInventory:(NSDictionary*)_inventory
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+	self = [super init];
     if (self) {
         // Custom initialization
+		inventory = _inventory;
     }
     return self;
 }
@@ -44,13 +59,146 @@
 	self.rightNavButtonImage = [UIImage imageNamed:@"heartButton"];
 	
 	[self setupContent];
+	
+	[self getSpecsForInventory];
+}
+
+-(void)getSpecsForInventory
+{
+	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+	
+	httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://mot-stage.herokuapp.com/"]];
+	[httpClient setAllowsInvalidSSLCertificate:YES];
+	
+	int vechicleID = [[inventory valueForKey:@"id"] intValue];
+	
+	if([inventory objectForKey:@"vehicle"])
+	{
+		vechicleID = [[inventory valueForKeyPath:@"vehicle.id"] intValue];
+	}
+	
+	NSString * path = [NSString stringWithFormat:@"client/inventory_selections/%d/vehicle_details.json", vechicleID];
+	
+	[httpClient getPath:path parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
+	 {
+		 if ([operation isCancelled]) return;
+		 
+		 NSDictionary * specs = [responseObject JSONValue];
+		 
+		 NSMutableArray * images = [[specs valueForKeyPath:@"vehicle.vehicle_images"] mutableCopy];
+		 
+		 for (int i = 0; i < images.count; i++)
+		 {
+			 [images replaceObjectAtIndex:i withObject:[images[i] valueForKeyPath:@"vehicle_image.client_view_image"]];
+		 }
+		 
+		 if(images.count > 0)
+		 {
+			 zoomButton.enabled = YES;
+			 
+			 vechicleImages = images;
+		 }
+		 
+		 NSMutableArray * optionsCategories = [[specs valueForKeyPath:@"vehicle.vehicle_option_categories"] mutableCopy];
+		 
+		 NSArray * options = [specs valueForKeyPath:@"vehicle.vehicle_options"];
+		 
+		 NSString * optionsText = @"";
+		 
+		 for (int i = 0; i < optionsCategories.count; i++)
+		 {
+			 optionsText = [optionsText stringByAppendingFormat:@"\n%@\n", [[optionsCategories[i] valueForKeyPath:@"vehicle_option_category.name"] uppercaseString]];
+			 
+			 int categoryID = [[optionsCategories[i] valueForKeyPath:@"vehicle_option_category.id"] intValue];
+			 
+			 NSMutableArray * optionsInCategory = [NSMutableArray new];
+			 
+			 int z = 0;
+			 
+			 for (int j = 0; j < options.count; j++)
+			 {
+				 NSDictionary * option = options[j];
+				 
+				 if([[option valueForKeyPath:@"vehicle_option.vehicle_option_category_id"] intValue] == categoryID)
+				 {
+					 [optionsInCategory addObject:[option valueForKey:@"vehicle_option"]];
+					 
+					 z++;
+					 
+					 optionsText = [optionsText stringByAppendingFormat:@"%2d) %@\n", z, [option valueForKeyPath:@"vehicle_option.name"]];
+				 }
+			 }
+			 
+			 NSMutableDictionary * newCategory = [[optionsCategories[i] valueForKey:@"vehicle_option_category"] mutableCopy];
+			 
+			 [newCategory setObject:optionsInCategory forKey:@"options"];
+			 
+			 [optionsCategories replaceObjectAtIndex:i withObject:newCategory];
+		 }
+		 
+		 if(optionsCategories.count)
+		 {
+			 vechicleOptions = optionsCategories;
+			 
+			 textView.text = optionsText;
+		 }
+		 
+		 [self hideHUD];
+	 }
+	failure:^(AFHTTPRequestOperation *operation, NSError *error)
+	 {
+		 NSLog(@"Error: %@", error);
+		 [self hideHUD];
+	 }];
+}
+
+-(void)hideHUD
+{
+	if([[httpClient operationQueue] operationCount] == 0)
+	{
+		[MBProgressHUD hideAllHUDsForView:[[[UIApplication sharedApplication] delegate] window] animated:YES];
+		[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+	}
 }
 
 -(void)setupContent
 {
-	nameLabel.text = @"2000 COUNTRY COACH INTRIGUE  36' (#P1126A)";
-	headerLabel.text = @"Very Nice & Clean 36' Slide";
-	descriptionLabel.text = @"WOW is the first thing you think of when you step inside this barely used Country Coach Intrigue. You may just think you are looking at a new 2000 coach. Nice and clean to the extreme and beautifully maintained. Like new lite gray leather front seats and living room recliner with a convertible booth type dinette and fabric jack-knife sofa leading to a tile kitchen and bath floor. Corian kitchen and bath counter tops impart the well deserved look and feel of luxury.";
+	if(![inventory objectForKey:@"vehicle"])
+	{
+		nameLabel.text = [inventory valueForKey:@"full_name"];
+		headerLabel.text = [inventory valueForKey:@"description"];
+		descriptionLabel.text = [inventory valueForKey:@"brochure_text"];
+		
+		NSString * price = [NSString stringWithFormat:@"$%@", [inventory valueForKey:@"final_price"]];
+		if(price)
+			newPrice.text = price;
+		
+		NSString * imageUrl = [inventory valueForKeyPath:@"view_thumb_image"];
+		if(imageUrl)
+			[imageView setImageWithURL:[NSURL URLWithString:imageUrl]];
+	}
+	else
+	{
+		nameLabel.text = [inventory valueForKeyPath:@"vehicle.full_name"];
+		headerLabel.text = [inventory valueForKeyPath:@"vehicle.description"];
+		descriptionLabel.text = [inventory valueForKeyPath:@"vehicle.features"];
+		
+		NSString * price = [NSString stringWithFormat:@"$%@", [inventory valueForKeyPath:@"vehicle.final_price"]];
+		if(price)
+			newPrice.text = price;
+		
+		NSString * imageUrl = [inventory valueForKeyPath:@"vehicle.client_view_image"];
+		if(imageUrl)
+			[imageView setImageWithURL:[NSURL URLWithString:imageUrl]];
+	}
+	
+	oldPriceBack.hidden = YES;
+	oldPrice.hidden = YES;
+	videoButton.enabled = NO;
+	zoomButton.enabled = NO;
+	
+	//[inventory valueForKey:@"reduced_price"];
+	//[inventory valueForKey:@"VIDEO"];
 	
 	CGRect rect = descriptionLabel.frame;
 	
@@ -68,11 +216,12 @@
 	eqipmentButton.selected = (sender == eqipmentButton);
 	
 	scroll.hidden = !generalButton.isSelected;
+	textView.hidden = !eqipmentButton.isSelected;
 }
 
 - (IBAction)zoomToolPressed
 {
-	ALog(@"Zoom pressed");
+	[self.navigationController pushViewController:[[GalleryController alloc] initWithImages:vechicleImages] animated:YES];
 }
 
 - (IBAction)watchVideoPressed
@@ -82,7 +231,7 @@
 
 - (IBAction)callUsPressed
 {
-	NSString *phone = @"+7(012)345-67-89";
+	NSString *phone = @"1-800-651-1112";
 	
 	[[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Call %@?", phone] message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Call", nil] show];
 }
@@ -91,13 +240,7 @@
 {
 	if(buttonIndex == 1)
 	{
-		NSString *phone = @"+7(012)345-67-89";
-		
-		phone = [phone stringByReplacingOccurrencesOfString:@" " withString:@""];
-		phone = [phone stringByReplacingOccurrencesOfString:@"-" withString:@""];
-		phone = [phone stringByReplacingOccurrencesOfString:@"(" withString:@""];
-		phone = [phone stringByReplacingOccurrencesOfString:@")" withString:@""];
-		phone = [NSString stringWithFormat:@"tel://%@", phone];
+		NSString *phone = @"tel://18006511112";
 		
 		ALog(@"Dialing %@", phone);
 		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:phone]];
@@ -149,6 +292,10 @@
 	headerLabel = nil;
 	descriptionLabel = nil;
 	scroll = nil;
+	imageView = nil;
+	videoButton = nil;
+	zoomButton = nil;
+	textView = nil;
 	[super viewDidUnload];
 }
 @end

@@ -12,5 +12,6 @@
 
 @property (strong, nonatomic) IBOutlet UIImageView *itemImageView;
 @property (strong, nonatomic) IBOutlet UIImageView *logoImageView;
+@property (strong, nonatomic) IBOutlet UILabel *nameLabel;
 
 @end

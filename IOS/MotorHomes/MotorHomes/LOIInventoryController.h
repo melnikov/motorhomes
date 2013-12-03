@@ -10,4 +10,6 @@
 
 @interface LOIInventoryController : BaseViewController <UITableViewDataSource, UITableViewDelegate>
 
+-(id)initWithInventories:(NSArray*)_inventories;
+
 @end

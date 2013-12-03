@@ -11,4 +11,6 @@
 
 @interface ItemDetailsController : BaseViewController <MFMailComposeViewControllerDelegate, UIAlertViewDelegate>
 
+-(id)initWithInventory:(NSDictionary*)_inventory;
+
 @end
