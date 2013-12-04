@@ -59,6 +59,11 @@
 	self.rightNavButtonImage = [UIImage imageNamed:@"heartButton"];
 	
 	[self setupContent];
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+	[super viewWillAppear:animated];
 	
 	[self getSpecsForInventory];
 }
@@ -67,14 +72,16 @@
 {
 	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
 	
-	httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://mot-stage.herokuapp.com/"]];
+	httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:API_URL_STRING]];
 	[httpClient setAllowsInvalidSSLCertificate:YES];
 	
 	int vechicleID = [[inventory valueForKey:@"id"] intValue];
 	
 	if([inventory objectForKey:@"vehicle"])
 	{
-		vechicleID = [[inventory valueForKeyPath:@"vehicle.id"] intValue];
+		[self parseSpecs:inventory];
+		
+		return;
 	}
 	
 	NSString * path = [NSString stringWithFormat:@"client/inventory_selections/%d/vehicle_details.json", vechicleID];
@@ -152,6 +159,67 @@
 	 }];
 }
 
+-(void)parseSpecs:(NSDictionary*)specs
+{
+	NSMutableArray * images = [[specs valueForKeyPath:@"vehicle.vehicle_images"] mutableCopy];
+	
+	for (int i = 0; i < images.count; i++)
+	{
+		[images replaceObjectAtIndex:i withObject:[images[i] valueForKeyPath:@"vehicle_image.client_view_image"]];
+	}
+	
+	if(images.count > 0)
+	{
+		zoomButton.enabled = YES;
+		
+		vechicleImages = images;
+	}
+	
+	NSMutableArray * optionsCategories = [[specs valueForKeyPath:@"vehicle.vehicle_option_categories"] mutableCopy];
+	
+	NSArray * options = [specs valueForKeyPath:@"vehicle.vehicle_options"];
+	
+	NSString * optionsText = @"";
+	
+	for (int i = 0; i < optionsCategories.count; i++)
+	{
+		optionsText = [optionsText stringByAppendingFormat:@"\n%@\n", [[optionsCategories[i] valueForKeyPath:@"vehicle_option_category.name"] uppercaseString]];
+		
+		int categoryID = [[optionsCategories[i] valueForKeyPath:@"vehicle_option_category.id"] intValue];
+		
+		NSMutableArray * optionsInCategory = [NSMutableArray new];
+		
+		int z = 0;
+		
+		for (int j = 0; j < options.count; j++)
+		{
+			NSDictionary * option = options[j];
+			
+			if([[option valueForKeyPath:@"vehicle_option.vehicle_option_category_id"] intValue] == categoryID)
+			{
+				[optionsInCategory addObject:[option valueForKey:@"vehicle_option"]];
+				
+				z++;
+				
+				optionsText = [optionsText stringByAppendingFormat:@"%2d) %@\n", z, [option valueForKeyPath:@"vehicle_option.name"]];
+			}
+		}
+		
+		NSMutableDictionary * newCategory = [[optionsCategories[i] valueForKey:@"vehicle_option_category"] mutableCopy];
+		
+		[newCategory setObject:optionsInCategory forKey:@"options"];
+		
+		[optionsCategories replaceObjectAtIndex:i withObject:newCategory];
+	}
+	
+	if(optionsCategories.count)
+	{
+		vechicleOptions = optionsCategories;
+		
+		textView.text = optionsText;
+	}
+}
+
 -(void)hideHUD
 {
 	if([[httpClient operationQueue] operationCount] == 0)
@@ -169,7 +237,9 @@
 		headerLabel.text = [inventory valueForKey:@"description"];
 		descriptionLabel.text = [inventory valueForKey:@"brochure_text"];
 		
-		NSString * price = [NSString stringWithFormat:@"$%@", [inventory valueForKey:@"final_price"]];
+		NSString * price;
+		if([inventory valueForKey:@"final_price"] != [NSNull null])
+			price = [NSString stringWithFormat:@"$%@", [inventory valueForKey:@"final_price"]];
 		if(price)
 			newPrice.text = price;
 		
@@ -183,7 +253,9 @@
 		headerLabel.text = [inventory valueForKeyPath:@"vehicle.description"];
 		descriptionLabel.text = [inventory valueForKeyPath:@"vehicle.features"];
 		
-		NSString * price = [NSString stringWithFormat:@"$%@", [inventory valueForKeyPath:@"vehicle.final_price"]];
+		NSString * price;
+		if([inventory valueForKey:@"vehicle.final_price"] != [NSNull null])
+			price = [NSString stringWithFormat:@"$%@", [inventory valueForKeyPath:@"vehicle.final_price"]];
 		if(price)
 			newPrice.text = price;
 		

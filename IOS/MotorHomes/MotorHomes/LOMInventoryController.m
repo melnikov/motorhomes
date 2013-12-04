@@ -13,6 +13,8 @@
 #import "LOIInventoryController.h"
 #import "ItemDetailsController.h"
 
+#define COUNT 100
+
 enum segmentType
 {
 	segmentAll = 0,
@@ -62,7 +64,7 @@ enum filterType
 {
 	if(!httpClient)
 	{
-		httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://mot-stage.herokuapp.com/"]];
+		httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:API_URL_STRING]];
 		[httpClient setAllowsInvalidSSLCertificate:YES];
 	}
 }
@@ -78,7 +80,7 @@ enum filterType
 	
 	[[httpClient operationQueue] cancelAllOperations];
 	
-	[self getListOfInventoriesFeatured:NO offset:0 count:1000];
+	[self getListOfInventoriesFeatured:NO offset:0 count:COUNT];
 	[self getListOfInventoriesByMake];
 	;
 }
@@ -121,6 +123,14 @@ enum filterType
 	}
 	failure:^(AFHTTPRequestOperation *operation, NSError *error)
 	{
+		NSCachedURLResponse *cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:operation.request];
+		
+		if (cachedResponse != nil && [[cachedResponse data] length] > 0)
+		{
+			// Get cached data
+			NSLog(@"Cache loaded");
+		}
+		
 		NSLog(@"Error: %@", error);
 		[self hideHUD];
 	}];
@@ -312,11 +322,14 @@ enum filterType
 		}
 		else
 		{
-			[tableFilteredIpad deselectRowAtIndexPath:[tableFilteredIpad indexPathForSelectedRow] animated:YES];
+			NSIndexPath * indexPath = [tableFilteredIpad indexPathForSelectedRow];
+			
+			if(indexPath)
+				[tableFilteredIpad deselectRowAtIndexPath:indexPath animated:YES];
 			
 			[self.navigationController.navigationBar viewWithTag:20].hidden = NO;
 			
-			[self getListOfInventoriesFeatured:segmentType offset:0 count:5];
+			[self getListOfInventoriesFeatured:segmentType offset:0 count:COUNT];
 		}
 	}
 }
@@ -404,8 +417,16 @@ enum filterType
 		
 		NSDictionary* dict = inventoriesByMake[indexPath.row];
 		
-		//cell.itemImageView.image = [dict valueForKey:@"image"];
-		cell.logoImageView.image = [dict valueForKey:@"logoImage"];
+		NSString * imagePath = [NSString stringWithFormat:@"http://s3.amazonaws.com/mot-production/vehicle_makes/sample_images/%d/original/%@", [[dict valueForKey:@"id"] intValue], [dict valueForKey:@"sample_image_file_name"]];
+		
+		if(imagePath)
+			[cell.itemImageView setImageWithURL:[NSURL URLWithString:imagePath]];
+		
+		NSString * logoPath = [NSString stringWithFormat:@"http://s3.amazonaws.com/mot-production/vehicle_makes/logos/%d/original/%@", [[dict valueForKey:@"id"] intValue], [dict valueForKey:@"logo_file_name"]];
+		
+		if(logoPath)
+			[cell.logoImageView setImageWithURL:[NSURL URLWithString:logoPath]];
+		
 		cell.nameLabel.text = [dict valueForKey:@"name"];
 		
 		return cell;
@@ -432,7 +453,9 @@ enum filterType
 			
 			cell.nameLabel.text = [dict valueForKeyPath:@"vehicle.full_name"];
 			
-			NSString * price = [@"$" stringByAppendingString:[dict valueForKeyPath:@"vehicle.final_price"]];
+			NSString * price;
+			if([dict valueForKeyPath:@"vehicle.final_price"] != [NSNull null])
+				price = [@"$" stringByAppendingString:[dict valueForKeyPath:@"vehicle.final_price"]];
 			if(price)
 				[cell.priceButton setTitle:price forState:UIControlStateNormal];
 		}
@@ -446,7 +469,9 @@ enum filterType
 			
 			cell.nameLabel.text = [dict valueForKeyPath:@"full_name"];
 			
-			NSString * price = [NSString stringWithFormat:@"$%d", [[dict valueForKey:@"price"] intValue]];
+			NSString * price;
+			if([dict valueForKey:@"price"] != [NSNull null])
+				price = [NSString stringWithFormat:@"$%d", [[dict valueForKey:@"price"] intValue]];
 			if(price)
 				[cell.priceButton setTitle:price forState:UIControlStateNormal];
 		}

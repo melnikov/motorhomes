@@ -14,6 +14,13 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+	NSURLCache *cache = [[NSURLCache alloc] initWithMemoryCapacity:4*1024*1024
+													  diskCapacity:100*1024*1024
+														  diskPath:@"app_cache"];
+	
+	// Set the shared cache to our new instance
+	[NSURLCache setSharedURLCache:cache];
+	
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     self.menuController = [MFSideMenuContainerViewController containerWithCenterViewController:nil leftMenuViewController:[LeftMenuController new] rightMenuViewController:nil];

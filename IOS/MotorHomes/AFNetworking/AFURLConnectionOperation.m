@@ -764,18 +764,35 @@ didReceiveResponse:(NSURLResponse *)response
     self.connection = nil;
 }
 
+//- (NSCachedURLResponse *)connection:(NSURLConnection *)connection
+//                  willCacheResponse:(NSCachedURLResponse *)cachedResponse
+//{
+//    if (self.cacheResponse) {
+//        return self.cacheResponse(connection, cachedResponse);
+//    } else {
+//        if ([self isCancelled]) {
+//            return nil;
+//        }
+//        
+//        return cachedResponse;
+//    }
+//}
+
+#warning Overriden method
+
 - (NSCachedURLResponse *)connection:(NSURLConnection *)connection
-                  willCacheResponse:(NSCachedURLResponse *)cachedResponse
-{
-    if (self.cacheResponse) {
-        return self.cacheResponse(connection, cachedResponse);
-    } else {
-        if ([self isCancelled]) {
-            return nil;
-        }
-        
-        return cachedResponse;
-    }
+				  willCacheResponse:(NSCachedURLResponse *)cachedResponse {
+	
+	NSMutableDictionary *mutableUserInfo = [[cachedResponse userInfo] mutableCopy];
+	NSMutableData *mutableData = [[cachedResponse data] mutableCopy];
+	NSURLCacheStoragePolicy storagePolicy = NSURLCacheStorageAllowedInMemoryOnly;
+	
+	// ...
+	
+	return [[NSCachedURLResponse alloc] initWithResponse:[cachedResponse response]
+													data:mutableData
+												userInfo:mutableUserInfo
+										   storagePolicy:storagePolicy];
 }
 
 #pragma mark - NSCoding

@@ -459,6 +459,8 @@ static void AFNetworkReachabilityReleaseCallback(const void *info) {
 
     NSURL *url = [NSURL URLWithString:path relativeToURL:self.baseURL];
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+#warning Allways Return Cache
+	request.cachePolicy = NSURLRequestReturnCacheDataElseLoad;
     [request setHTTPMethod:method];
     [request setAllHTTPHeaderFields:self.defaultHeaders];
 

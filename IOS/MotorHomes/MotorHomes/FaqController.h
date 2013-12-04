@@ -11,4 +11,6 @@
 
 @interface FaqController : BaseViewController
 
+-(void)tapToShowViewFrameChanged:(NSDictionary*)dict;
+
 @end

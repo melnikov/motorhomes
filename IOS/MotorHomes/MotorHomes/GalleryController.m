@@ -45,6 +45,7 @@
 	for (int i = 0; i < images.count; i++)
 	{
 		UIImageView * iv = [UIImageView new];
+		iv.contentMode = UIViewContentModeScaleAspectFit;
 		iv.frame = CGRectMake(x, y, scroll.frame.size.width, scroll.frame.size.width * 0.6f);
 		
 		[iv setImageWithURL:[NSURL URLWithString:images[i]]];

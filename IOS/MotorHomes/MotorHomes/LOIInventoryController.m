@@ -127,7 +127,9 @@ enum filterType
 	
 	cell.nameLabel.text = [dict valueForKeyPath:@"full_name"];
 	
-	NSString * price = [NSString stringWithFormat:@"$%d", [[dict valueForKey:@"price"] intValue]];
+	NSString * price;
+	if([dict valueForKey:@"price"] != [NSNull null])
+		price = [NSString stringWithFormat:@"$%d", [[dict valueForKey:@"price"] intValue]];
 	if(price)
 		[cell.priceButton setTitle:price forState:UIControlStateNormal];
 	

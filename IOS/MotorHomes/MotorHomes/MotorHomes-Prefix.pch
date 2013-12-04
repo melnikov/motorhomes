@@ -37,4 +37,4 @@
 #define RGBA(r, g, b, a)                    [UIColor colorWithRed:(r)/255.f green:(g)/255.f blue:(b)/255.f alpha:a / 1.f]
 #define IS_IPAD								UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
 
-#define API_URL_STRING						@"http://mot-stage.herokuapp.com/"
+#define API_URL_STRING						@"http://mot-production.herokuapp.com/"
