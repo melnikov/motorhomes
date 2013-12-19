@@ -785,7 +785,7 @@ didReceiveResponse:(NSURLResponse *)response
 	
 	NSMutableDictionary *mutableUserInfo = [[cachedResponse userInfo] mutableCopy];
 	NSMutableData *mutableData = [[cachedResponse data] mutableCopy];
-	NSURLCacheStoragePolicy storagePolicy = NSURLCacheStorageAllowedInMemoryOnly;
+	NSURLCacheStoragePolicy storagePolicy = NSURLCacheStorageAllowed;
 	
 	// ...
 	

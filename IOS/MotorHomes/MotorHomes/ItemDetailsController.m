@@ -32,6 +32,9 @@
 	NSArray * vechicleImages;
 	NSArray * vechicleOptions;
 	
+	NSString * specsText;
+	NSString * equipmentText;
+	
 	IBOutlet UITextView *textView;
 }
 
@@ -81,6 +84,8 @@
 	{
 		[self parseSpecs:inventory];
 		
+		[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+		
 		return;
 	}
 	
@@ -92,63 +97,7 @@
 		 
 		 NSDictionary * specs = [responseObject JSONValue];
 		 
-		 NSMutableArray * images = [[specs valueForKeyPath:@"vehicle.vehicle_images"] mutableCopy];
-		 
-		 for (int i = 0; i < images.count; i++)
-		 {
-			 [images replaceObjectAtIndex:i withObject:[images[i] valueForKeyPath:@"vehicle_image.client_view_image"]];
-		 }
-		 
-		 if(images.count > 0)
-		 {
-			 zoomButton.enabled = YES;
-			 
-			 vechicleImages = images;
-		 }
-		 
-		 NSMutableArray * optionsCategories = [[specs valueForKeyPath:@"vehicle.vehicle_option_categories"] mutableCopy];
-		 
-		 NSArray * options = [specs valueForKeyPath:@"vehicle.vehicle_options"];
-		 
-		 NSString * optionsText = @"";
-		 
-		 for (int i = 0; i < optionsCategories.count; i++)
-		 {
-			 optionsText = [optionsText stringByAppendingFormat:@"\n%@\n", [[optionsCategories[i] valueForKeyPath:@"vehicle_option_category.name"] uppercaseString]];
-			 
-			 int categoryID = [[optionsCategories[i] valueForKeyPath:@"vehicle_option_category.id"] intValue];
-			 
-			 NSMutableArray * optionsInCategory = [NSMutableArray new];
-			 
-			 int z = 0;
-			 
-			 for (int j = 0; j < options.count; j++)
-			 {
-				 NSDictionary * option = options[j];
-				 
-				 if([[option valueForKeyPath:@"vehicle_option.vehicle_option_category_id"] intValue] == categoryID)
-				 {
-					 [optionsInCategory addObject:[option valueForKey:@"vehicle_option"]];
-					 
-					 z++;
-					 
-					 optionsText = [optionsText stringByAppendingFormat:@"%2d) %@\n", z, [option valueForKeyPath:@"vehicle_option.name"]];
-				 }
-			 }
-			 
-			 NSMutableDictionary * newCategory = [[optionsCategories[i] valueForKey:@"vehicle_option_category"] mutableCopy];
-			 
-			 [newCategory setObject:optionsInCategory forKey:@"options"];
-			 
-			 [optionsCategories replaceObjectAtIndex:i withObject:newCategory];
-		 }
-		 
-		 if(optionsCategories.count)
-		 {
-			 vechicleOptions = optionsCategories;
-			 
-			 textView.text = optionsText;
-		 }
+		 [self parseSpecs:specs];
 		 
 		 [self hideHUD];
 	 }
@@ -174,6 +123,93 @@
 		
 		vechicleImages = images;
 	}
+	
+	if([specs valueForKeyPath:@"vehicle.yt_link"] != [NSNull null] && [specs valueForKeyPath:@"vehicle.yt_link"] != nil &&
+	   ![[[specs valueForKeyPath:@"vehicle.yt_link"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@""])
+	{
+		videoButton.enabled = YES;
+		
+		[videoButton setTitle:[specs valueForKeyPath:@"vehicle.yt_link"] forState:UIControlStateApplication];
+	}
+	
+	specsText = @"";
+	
+	for(int i = 0; i < [[[specs objectForKey:@"vehicle"] allKeys] count]; i++)
+	{
+		NSString * key = [[[specs objectForKey:@"vehicle"] allKeys] objectAtIndex:i];
+		
+		if([key isEqualToString:@"stock_no"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Stock #: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+		else if([key isEqualToString:@"year"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Stock Year: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+		else if([key isEqualToString:@"model_name"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Model: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+		else if([key isEqualToString:@"make_name"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Make: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+		else if([key isEqualToString:@"location_name"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Location: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+		else if([key isEqualToString:@"class_name"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Type: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+		else if([key isEqualToString:@"fmiles"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Mileage: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+		else if([key isEqualToString:@"engine"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Engine: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+		else if([key isEqualToString:@"transmission"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Transmission: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+		else if([key isEqualToString:@"length"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Length: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+		else if([key isEqualToString:@"chassis"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Chassis: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+		else if([key isEqualToString:@"type_name"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Fuel Type: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+		else if([key isEqualToString:@"generator"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Generator: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+		else if([key isEqualToString:@"generator_hours"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Generator Hours: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+		else if([key isEqualToString:@"slides"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Slides: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+		else if([key isEqualToString:@"int_color"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Interior color: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+		else if([key isEqualToString:@"ext_color"])
+		{
+			specsText = [specsText stringByAppendingFormat:@"Exterior color: %@\n\n", [[specs objectForKey:@"vehicle"] objectForKey:key]];
+		}
+	}
+	
+	if(specsButton.isSelected)
+		textView.text = specsText;
 	
 	NSMutableArray * optionsCategories = [[specs valueForKeyPath:@"vehicle.vehicle_option_categories"] mutableCopy];
 	
@@ -216,7 +252,10 @@
 	{
 		vechicleOptions = optionsCategories;
 		
-		textView.text = optionsText;
+		equipmentText = optionsText;
+		
+		if(eqipmentButton.isSelected)
+			textView.text = equipmentText;
 	}
 }
 
@@ -234,6 +273,10 @@
 	if(![inventory objectForKey:@"vehicle"])
 	{
 		nameLabel.text = [inventory valueForKey:@"full_name"];
+		
+		if([inventory valueForKey:@"stock_no"] != [NSNull null])
+			nameLabel.text = [nameLabel.text stringByAppendingString:[NSString stringWithFormat:@"\nStock #: %@", [inventory valueForKey:@"stock_no"]]];
+		
 		headerLabel.text = [inventory valueForKey:@"description"];
 		descriptionLabel.text = [inventory valueForKey:@"brochure_text"];
 		
@@ -288,7 +331,12 @@
 	eqipmentButton.selected = (sender == eqipmentButton);
 	
 	scroll.hidden = !generalButton.isSelected;
-	textView.hidden = !eqipmentButton.isSelected;
+	textView.hidden = generalButton.isSelected;
+	
+	if(specsButton.isSelected)
+		textView.text = specsText;
+	else
+		textView.text = equipmentText;
 }
 
 - (IBAction)zoomToolPressed
@@ -298,7 +346,7 @@
 
 - (IBAction)watchVideoPressed
 {
-	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://www.youtube.com/watch?v=qJXGor0FCcc#t=0"]];
+	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://www.youtube.com/watch?v=%@", [videoButton titleForState:UIControlStateApplication]]]];
 }
 
 - (IBAction)callUsPressed

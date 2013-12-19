@@ -129,7 +129,6 @@
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-						<bool key="IBUIEnabled">NO</bool>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
@@ -168,7 +167,7 @@
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
-						<string key="IBUINormalTitle">Eqipment</string>
+						<string key="IBUINormalTitle">Equipment</string>
 						<object class="NSColor" key="IBUIHighlightedTitleColor">
 							<int key="NSColorSpace">2</int>
 							<bytes key="NSRGB">MC44NjI3NDUwOTggMC43MDU4ODIzNTI5IDAuMjc0NTA5ODAzOQA</bytes>
@@ -461,7 +460,7 @@
 								<string key="NSFrame">{{0, 435}, {749, 30}}</string>
 								<reference key="NSSuperview" ref="506062528"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="804559757"/>
+								<reference key="NSNextKeyView" ref="941709642"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -505,6 +504,7 @@
 						<string key="NSFrame">{{235, 89}, {522, 823}}</string>
 						<reference key="NSSuperview" ref="842650598"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="804559757"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<reference key="IBUIBackgroundColor" ref="1066386735"/>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -977,6 +977,17 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">ItemDetailsController</string>
 					<string key="superclassName">BaseViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">segmentChanged:</string>
+						<string key="NS.object.0">UIButton</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">segmentChanged:</string>
+						<object class="IBActionInfo" key="NS.object.0">
+							<string key="name">segmentChanged:</string>
+							<string key="candidateClassName">UIButton</string>
+						</object>
+					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="descriptionLabel">UILabel</string>
 						<string key="eqipmentButton">UIButton</string>

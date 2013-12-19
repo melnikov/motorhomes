@@ -37,7 +37,9 @@ enum filterType
 	IBOutlet UITableView *table;
 	IBOutlet UITableView *tableFilteredIpad;
 	NSArray * inventoriesByMake;
-	NSArray * inventoriesFiltered;
+	NSArray * inventoriesBySelectedMake;
+	NSArray * inventoriesAll;
+	NSArray * inventoriesFeatured;
 	int segmentType;
 	IBOutlet UIButton *allButton;
 	IBOutlet UIButton *byMakeButton;
@@ -71,42 +73,55 @@ enum filterType
 
 -(void)getInventories
 {
-	[MBProgressHUD showHUDAddedTo:[[[UIApplication sharedApplication] delegate] window] animated:YES];
-	
 	[self createHttpClient];
 	
-	[self segmentChanged:allButton];
+	[self segmentChanged:byMakeButton];
 	[self filterChanged:filterAllButton];
-	
-	[[httpClient operationQueue] cancelAllOperations];
-	
-	[self getListOfInventoriesFeatured:NO offset:0 count:COUNT];
-	[self getListOfInventoriesByMake];
-	;
 }
 
 -(void)hideHUD
 {
-	if([[httpClient operationQueue] operationCount] == 0)
-	{
+//	if([[httpClient operationQueue] operationCount] == 0)
+//	{
 		[MBProgressHUD hideAllHUDsForView:[[[UIApplication sharedApplication] delegate] window] animated:YES];
 		[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-	}
+//	}
 }
 
--(void)getListOfInventoriesFeatured:(BOOL)featured offset:(int)offset count:(int)count
+-(NSData*)getCachedResponseDataWithPath:(NSString*)path httpMethod:(NSString*)httpMethod parameters:(NSDictionary*)parameters
 {
-	isByMakeData = NO;
+	NSMutableURLRequest * request = [httpClient requestWithMethod:@"GET" path:path parameters:nil];
 	
-	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+	NSCachedURLResponse *cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
 	
-	NSString * path = [NSString stringWithFormat:@"client/inventory_selections.json?is_featured=%@&amount=%d&offset=%d", (featured ? @"yes" : @"no"), count, offset];
-	
-	[httpClient getPath:path parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
+	if (cachedResponse != nil && [[cachedResponse data] length] > 0)
 	{
-		if ([operation isCancelled]) return;
-		//NSLog(@"%@", [responseObject JSONValue]);
-		inventoriesFiltered = [responseObject JSONValue];
+		id data = [cachedResponse.data JSONValue];
+		
+		if((![data isKindOfClass:[NSArray class]] && ![data isKindOfClass:[NSDictionary class]]) ||
+		   ([data isKindOfClass:[NSArray class]] && [data count] <= 0) || ([data isKindOfClass:[NSDictionary class]] && [data allKeys] <= 0))
+			return nil;
+		
+		// Get cached data
+		NSLog(@"Cache loaded for path: %@", path);
+		
+		return cachedResponse.data;
+	}
+	
+	return nil;
+}
+
+-(void)fetchListOfInventoriesResponseData:(id)data segmentType:(int)type
+{
+	//NSLog(@"%@", [responseObject JSONValue]);
+	
+	if(type == segmentAll || type == segmentFeatured)
+	{
+		if(type == segmentFeatured)
+			inventoriesFeatured = [data JSONValue];
+		else
+			inventoriesAll = [data JSONValue];
+		
 		if(!IS_IPAD)
 		{
 			//[table scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
@@ -119,78 +134,59 @@ enum filterType
 			
 			[tableFilteredIpad reloadData];
 		}
-		[self hideHUD];
 	}
-	failure:^(AFHTTPRequestOperation *operation, NSError *error)
+	else if(type == segmentByMake)
 	{
-		NSCachedURLResponse *cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:operation.request];
-		
-		if (cachedResponse != nil && [[cachedResponse data] length] > 0)
-		{
-			// Get cached data
-			NSLog(@"Cache loaded");
-		}
-		
-		NSLog(@"Error: %@", error);
-		[self hideHUD];
-	}];
-}
-
--(void)getListOfInventoriesByMake
-{
-	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-	
-	NSString * path = [NSString stringWithFormat:@"front/vehicles/makes/all.json"];
-	
-	[httpClient getPath:path parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
-	{
-		if ([operation isCancelled]) return;
-		//NSLog(@"%@", [responseObject JSONValue]);
-		inventoriesByMake = [responseObject JSONValue];
+		inventoriesByMake = [data JSONValue];
 		//[table scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 		[table reloadData];
-		[self hideHUD];
 	}
-	failure:^(AFHTTPRequestOperation *operation, NSError *error)
+	else
 	{
-		NSLog(@"Error: %@", error);
-		[self hideHUD];
-	}];
-}
-
--(void)getListOfInventoriesModeldByMakeName:(NSString*)makeName
-{
-	if(IS_IPAD)
-	{
-		isByMakeData = YES;
+		NSArray * models = [[data objectForKey:@"data"] JSONValue];
 		
-		allButton.selected = NO;
-	}
-	
-	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-	
-	NSString * path = [NSString stringWithFormat:@"front/vehicles/models/%@/all.json", makeName];
-	
-	[httpClient getPath:path parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
-	 {
-		 if ([operation isCancelled]) return;
-		 NSArray * models = [responseObject JSONValue];
-		 
-		 if(models.count <= 0)
+		NSString * makeName = [data objectForKey:@"makeName"];
+		
+		if(models.count <= 0)
 			[self hideHUD];
-		 
-		 NSMutableArray * inventoriesByMakeName = [NSMutableArray new];
-		 
-		 for (int i = 0; i < models.count; i++)
-		 {
-			 NSString * modelName = [models[i] valueForKey:@"name"];
-			 
-			 NSString * path = [NSString stringWithFormat:@"front/vehicles/inventory/%@/%@/all.json", makeName, modelName];
-			 
-			 [httpClient getPath:path parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
+		
+		NSMutableArray * inventoriesByMakeName = [NSMutableArray new];
+		
+		for (int i = 0; i < models.count; i++)
+		{
+			NSString * modelName = [models[i] valueForKey:@"url_name"];
+			
+			NSString * path = [NSString stringWithFormat:@"front/vehicles/inventory/%@/%@/all.json", makeName, modelName];
+			
+			NSData * data = [self getCachedResponseDataWithPath:path httpMethod:@"GET" parameters:nil];
+			
+			if (data != nil && [data length] > 0)
+			{
+				[inventoriesByMakeName addObjectsFromArray:[data JSONValue]];
+				
+				if(i == models.count - 1)
+				{
+					[self hideHUD];
+					
+					if(IS_IPAD)
+					{
+						inventoriesBySelectedMake = inventoriesByMakeName;
+						
+						//[tableFilteredIpad scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+						
+						[tableFilteredIpad reloadData];
+					}
+					else
+					{
+						[self.navigationController pushViewController:[[LOIInventoryController alloc] initWithInventories:inventoriesByMakeName] animated:YES];
+					}
+				}
+				
+				continue;
+			}
+			
+			[httpClient getPath:path parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
 			 {
-				 if ([operation isCancelled]) return;
-				 
 				 [inventoriesByMakeName addObjectsFromArray:[responseObject JSONValue]];
 				 
 				 if(i == models.count - 1)
@@ -199,13 +195,11 @@ enum filterType
 					 
 					 if(IS_IPAD)
 					 {
-						 inventoriesFiltered = inventoriesByMakeName;
+						 inventoriesBySelectedMake = inventoriesByMakeName;
 						 
 						 //[tableFilteredIpad scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 						 
 						 [tableFilteredIpad reloadData];
-						 
-						 [self hideHUD];
 					 }
 					 else
 					 {
@@ -213,29 +207,188 @@ enum filterType
 					 }
 				 }
 			 }
-			 failure:^(AFHTTPRequestOperation *operation, NSError *error)
+						failure:^(AFHTTPRequestOperation *operation, NSError *error)
 			 {
-				  NSLog(@"Error: %@", error);
-				  [self hideHUD];
+				 [self hideHUD];
 				 
-				 inventoriesFiltered = [NSArray new];
+				 NSData * data = [self getCachedResponseDataWithPath:path httpMethod:@"GET" parameters:nil];
 				 
-				 //[tableFilteredIpad scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+				 if (data != nil && [data length] > 0)
+				 {
+					 [inventoriesByMakeName addObjectsFromArray:[data JSONValue]];
+					 
+					 if(i == models.count - 1)
+					 {
+						 [self hideHUD];
+						 
+						 if(IS_IPAD)
+						 {
+							 inventoriesBySelectedMake = inventoriesByMakeName;
+							 
+							 //[tableFilteredIpad scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+							 
+							 [tableFilteredIpad reloadData];
+						 }
+						 else
+						 {
+							 [self.navigationController pushViewController:[[LOIInventoryController alloc] initWithInventories:inventoriesByMakeName] animated:YES];
+						 }
+					 }
+				 }
+				 else
+				 {
+					 inventoriesBySelectedMake = [NSArray new];
+					 
+					 //[tableFilteredIpad scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+					 
+					 [tableFilteredIpad reloadData];
+				 }
 				 
-				 [tableFilteredIpad reloadData];
+				 NSLog(@"Error: %@", error);
 			 }];
-		 }
+		}
+	}
+	
+	[self hideHUD];
+}
+
+-(void)getListOfInventoriesFeatured:(BOOL)featured offset:(int)offset count:(int)count
+{
+	isByMakeData = NO;
+	
+	int type = (featured ? segmentFeatured : segmentAll);
+	
+	[MBProgressHUD showHUDAddedTo:[[[UIApplication sharedApplication] delegate] window] animated:YES];
+	
+	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+	
+	NSString * path = [NSString stringWithFormat:@"client/inventory_selections.json?is_featured=%@&amount=%d&offset=%d", (featured ? @"yes" : @"no"), count, offset];
+	
+	NSData * data = [self getCachedResponseDataWithPath:path httpMethod:@"GET" parameters:nil];
+	
+	if (data != nil && [data length] > 0)
+	{
+		[self fetchListOfInventoriesResponseData:data segmentType:type];
+		
+		return;
+	}
+	
+	[httpClient getPath:path parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
+	{
+		NSLog(@"Inventories Loaded");
+		
+		[self fetchListOfInventoriesResponseData:responseObject segmentType:type];
+	}
+	failure:^(AFHTTPRequestOperation *operation, NSError *error)
+	{
+		NSData * data = [self getCachedResponseDataWithPath:path httpMethod:@"GET" parameters:nil];
+		
+		if (data != nil && [data length] > 0)
+		{
+			[self fetchListOfInventoriesResponseData:data segmentType:type];
+			
+			return;
+		}
+		
+		NSLog(@"Error: %@", error);
+		
+		[self hideHUD];
+	}];
+}
+
+-(void)getListOfInventoriesByMake
+{
+	[MBProgressHUD showHUDAddedTo:[[[UIApplication sharedApplication] delegate] window] animated:YES];
+	
+	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+	
+	NSString * path = [NSString stringWithFormat:@"front/vehicles/makes/all.json"];
+	
+	NSData * data = [self getCachedResponseDataWithPath:path httpMethod:@"GET" parameters:nil];
+	
+	if (data != nil && [data length] > 0)
+	{
+		[self fetchListOfInventoriesResponseData:data segmentType:segmentByMake];
+		
+		return;
+	}
+	
+	[httpClient getPath:path parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
+	{
+		NSLog(@"Inventories ByMake Loaded");
+		
+		[self fetchListOfInventoriesResponseData:responseObject segmentType:segmentByMake];
+	}
+	failure:^(AFHTTPRequestOperation *operation, NSError *error)
+	{
+		NSData * data = [self getCachedResponseDataWithPath:path httpMethod:@"GET" parameters:nil];
+		
+		if (data != nil && [data length] > 0)
+		{
+			[self fetchListOfInventoriesResponseData:data segmentType:segmentByMake];
+			
+			return;
+		}
+		
+		NSLog(@"Error: %@", error);
+		
+		if(inventoriesByMake.count <= 0 && IS_IPAD)
+			[self getListOfInventoriesByMake];
+		
+		[self hideHUD];
+	}];
+}
+
+-(void)getListOfInventoriesModeldByMakeName:(NSString*)makeName
+{
+	makeName = [makeName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+	
+	if(IS_IPAD)
+	{
+		isByMakeData = YES;
+		
+		allButton.selected = NO;
+	}
+	
+	[MBProgressHUD showHUDAddedTo:[[[UIApplication sharedApplication] delegate] window] animated:YES];
+	
+	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+	
+	NSString * path = [NSString stringWithFormat:@"front/vehicles/models/%@/all.json", makeName];
+	
+	NSData * data = [self getCachedResponseDataWithPath:path httpMethod:@"GET" parameters:nil];
+	
+	if (data != nil && [data length] > 0)
+	{
+		NSDictionary * dict = @{@"makeName" : makeName, @"data" : data};
+		
+		[self fetchListOfInventoriesResponseData:dict segmentType:-1];
+		
+		return;
+	}
+	
+	[httpClient getPath:path parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
+	 {
+		 NSDictionary * dict = @{@"makeName" : makeName, @"data" : responseObject};
+		 
+		 NSLog(@"Inventories ByMakeName Loaded");
+		 
+		 [self fetchListOfInventoriesResponseData:dict segmentType:-1];
 	 }
 	failure:^(AFHTTPRequestOperation *operation, NSError *error)
 	 {
-		 NSLog(@"Error: %@", error);
+		 NSData * data = [self getCachedResponseDataWithPath:path httpMethod:@"GET" parameters:nil];
+		 
+		 if (data != nil && [data length] > 0)
+		 {
+			 NSDictionary * dict = @{@"makeName" : makeName, @"data" : data};
+			 
+			 [self fetchListOfInventoriesResponseData:dict segmentType:-1];
+			 
+			 return;
+		 }
+		 
 		 [self hideHUD];
-		 
-		 inventoriesFiltered = [NSArray new];
-		 
-		 //[tableFilteredIpad scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
-		 
-		  [tableFilteredIpad reloadData];
 	 }];
 }
 
@@ -308,9 +461,6 @@ enum filterType
 		
 		segmentType = sender.tag;
 		
-		if([inventoriesByMake count] && [inventoriesFiltered count])
-			[[httpClient operationQueue] cancelAllOperations];
-		
 		//Show/hide right navigation button
 		if(segmentType == segmentByMake)
 		{
@@ -329,7 +479,48 @@ enum filterType
 			
 			[self.navigationController.navigationBar viewWithTag:20].hidden = NO;
 			
-			[self getListOfInventoriesFeatured:segmentType offset:0 count:COUNT];
+			if(!IS_IPAD)
+			{
+				[table reloadData];
+			}
+			else
+			{
+				[tableFilteredIpad reloadData];
+			}
+		}
+		
+		switch (segmentType)
+		{
+			case segmentAll:
+				if([inventoriesAll count] <= 0)
+				{
+					[self getListOfInventoriesFeatured:NO offset:0 count:COUNT];
+					
+					return;
+				}
+				break;
+				
+			case segmentFeatured:
+				if([inventoriesFeatured count] <= 0)
+				{
+					[self getListOfInventoriesFeatured:YES offset:0 count:COUNT];
+					
+					return;
+				}
+				break;
+				
+			case segmentByMake:
+				if([inventoriesByMake count] <= 0)
+				{
+					[self getListOfInventoriesByMake];
+					
+					return;
+				}
+				break;
+				
+			default:
+				return;
+				break;
 		}
 	}
 }
@@ -374,10 +565,14 @@ enum filterType
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-	if(segmentType == segmentByMake || (IS_IPAD && tableView == table))
+	if((segmentType == segmentByMake && !IS_IPAD) || (IS_IPAD && tableView == table))
 		return inventoriesByMake.count;
-	
-	return inventoriesFiltered.count;
+	else if(segmentType == segmentAll)
+		return inventoriesAll.count;
+	else if(segmentType == segmentFeatured)
+		return inventoriesFeatured.count;
+	else
+		return inventoriesBySelectedMake.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -400,7 +595,7 @@ enum filterType
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	if(segmentType == segmentByMake || (IS_IPAD && tableView == table))
+	if((segmentType == segmentByMake && !IS_IPAD) || (IS_IPAD && tableView == table))
 	{
 		static NSString *CellIdentifier = @"CellLOM";
 		
@@ -443,9 +638,14 @@ enum filterType
 			cell.selectionStyle = UITableViewCellSelectionStyleNone;
 		}
 		
-		if(!isByMakeData)
+		if(segmentType == segmentAll || segmentType == segmentFeatured)
 		{
-			NSDictionary* dict = inventoriesFiltered[indexPath.row];
+			NSDictionary* dict;
+			
+			if(segmentType == segmentFeatured)
+				dict = inventoriesFeatured[indexPath.row];
+			else if(segmentType == segmentAll)
+				dict = inventoriesAll[indexPath.row];
 			
 			NSString * imageUrl = [dict valueForKeyPath:@"vehicle.client_list_image"];
 			if(imageUrl)
@@ -461,7 +661,7 @@ enum filterType
 		}
 		else
 		{
-			NSDictionary* dict = inventoriesFiltered[indexPath.row];
+			NSDictionary* dict = inventoriesBySelectedMake[indexPath.row];
 			
 			NSString * imageUrl = [dict valueForKeyPath:@"view_thumb_image"];
 			if(imageUrl)
@@ -492,17 +692,26 @@ enum filterType
 			
 			[self getListOfInventoriesModeldByMakeName:name];
 		}
+		else if(segmentType == segmentFeatured)
+			[self.navigationController pushViewController:[[ItemDetailsController alloc] initWithInventory:inventoriesFeatured[indexPath.row]] animated:YES];
 		else
-			[self.navigationController pushViewController:[[ItemDetailsController alloc] initWithInventory:inventoriesFiltered[indexPath.row]] animated:YES];
+			[self.navigationController pushViewController:[[ItemDetailsController alloc] initWithInventory:inventoriesAll[indexPath.row]] animated:YES];
 	}
 	else
 	{
 		if(tableView == tableFilteredIpad)
 		{
-			[self.navigationController pushViewController:[[ItemDetailsController alloc] initWithInventory:inventoriesFiltered[indexPath.row]] animated:YES];
+			if(segmentType == segmentFeatured)
+				[self.navigationController pushViewController:[[ItemDetailsController alloc] initWithInventory:inventoriesFeatured[indexPath.row]] animated:YES];
+			else if(segmentType == segmentAll)
+				[self.navigationController pushViewController:[[ItemDetailsController alloc] initWithInventory:inventoriesAll[indexPath.row]] animated:YES];
+			else
+				[self.navigationController pushViewController:[[ItemDetailsController alloc] initWithInventory:inventoriesBySelectedMake[indexPath.row]] animated:YES];
 		}
 		else
 		{
+			segmentType = segmentByMake;
+			
 			[[httpClient operationQueue] cancelAllOperations];
 			
 			NSString * name = [inventoriesByMake[indexPath.row] valueForKey:@"url_name"];
