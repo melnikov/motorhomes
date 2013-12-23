@@ -14,15 +14,17 @@
 
 enum MenuSection
 {
-	MenuSectionPreownedInventory   = 10,
-	MenuSectionFeaturedInventory   = 20,
-	MenuSectionServiceCenter       = 30,
-	MenuSectionConsignmentProgram  = 40,
-	MenuSectionNotifications       = 50,
-	MenuSectionWishList            = 60,
-	MenuSectionSignIn              = 70,
-	MenuSectionCreateAccount	   = 80,
-	MenuSectionFAQ				   = 90
+	MenuSectionPreownedInventory    = 10,
+	MenuSectionFeaturedInventory    = 20,
+	MenuSectionServiceCenter        = 30,
+	MenuSectionRemodelCenter        = 40,
+	MenuSectionPartsAndAccessories  = 43,
+	MenuSectionConsignmentAndTrades = 47,
+	MenuSectionNotifications        = 50,
+	MenuSectionWishList             = 60,
+	MenuSectionSignIn               = 70,
+	MenuSectionCreateAccount	    = 80,
+	MenuSectionFAQ				    = 90
 };
 
 @interface LeftMenuController ()
@@ -79,9 +81,25 @@ enum MenuSection
 	
 	[controllers addObject:regController];
 	
-	UINavigationController * faqController = [self createCustomNavigationControllerFromViewController:[FaqController new]];
+	UINavigationController * faqGeneralController = [self createCustomNavigationControllerFromViewController:[[FaqController alloc] initWithType:FaqTypeGeneral]];
 	
-	[controllers addObject:faqController];
+	[controllers addObject:faqGeneralController];
+	
+	UINavigationController * faqServiceController = [self createCustomNavigationControllerFromViewController:[[FaqController alloc] initWithType:FaqTypeService]];
+	
+	[controllers addObject:faqServiceController];
+	
+	UINavigationController * faqRemodelController = [self createCustomNavigationControllerFromViewController:[[FaqController alloc] initWithType:FaqTypeRemodel]];
+	
+	[controllers addObject:faqRemodelController];
+	
+	UINavigationController * faqPartsController = [self createCustomNavigationControllerFromViewController:[[FaqController alloc] initWithType:FaqTypeParts]];
+	
+	[controllers addObject:faqPartsController];
+	
+	UINavigationController * faqConsController = [self createCustomNavigationControllerFromViewController:[[FaqController alloc] initWithType:FaqTypeConsignment]];
+	
+	[controllers addObject:faqConsController];
 	
 	[appDelegate.menuController setCenterViewController:lomInventory];
 	
@@ -147,13 +165,19 @@ enum MenuSection
 			break;
 			
 		case MenuSectionServiceCenter:
-			return;
-			navController = viewControllers[0];
+			navController = viewControllers[4];
 			break;
 			
-		case MenuSectionConsignmentProgram:
-			return;
-			navController = viewControllers[0];
+		case MenuSectionRemodelCenter:
+			navController = viewControllers[5];
+			break;
+			
+		case MenuSectionPartsAndAccessories:
+			navController = viewControllers[6];
+			break;
+			
+		case MenuSectionConsignmentAndTrades:
+			navController = viewControllers[7];
 			break;
 			
 		case MenuSectionNotifications:

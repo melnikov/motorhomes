@@ -8,9 +8,19 @@
 
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
+#import "TapToShowView.h"
 
-@interface FaqController : BaseViewController
+enum FaqType
+{
+	FaqTypeGeneral     = 0,
+	FaqTypeService     = 1,
+	FaqTypeRemodel     = 2,
+	FaqTypeParts       = 3,
+	FaqTypeConsignment = 4
+};
 
--(void)tapToShowViewFrameChanged:(NSDictionary*)dict;
+@interface FaqController : BaseViewController <TapToShowViewDelegate>
+
+-(id)initWithType:(int)_type;
 
 @end

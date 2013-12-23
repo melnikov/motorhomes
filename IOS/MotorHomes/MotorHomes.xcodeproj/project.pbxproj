@@ -50,6 +50,11 @@
 		845D710F182BC43600A3757C /* horizontalShadow.png in Resources */ = {isa = PBXBuildFile; fileRef = 845D710E182BC43600A3757C /* horizontalShadow.png */; };
 		845D7111182BD63600A3757C /* yellowStar.png in Resources */ = {isa = PBXBuildFile; fileRef = 845D7110182BD63600A3757C /* yellowStar.png */; };
 		845D7113182BDEA800A3757C /* busIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 845D7112182BDEA700A3757C /* busIcon.png */; };
+		846D04FF18686FC600B244C1 /* VideoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 846D04FD18686FC600B244C1 /* VideoController.m */; };
+		846D050018686FC600B244C1 /* VideoController~iphone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 846D04FE18686FC600B244C1 /* VideoController~iphone.xib */; };
+		846D050218686FEB00B244C1 /* VideoController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 846D050118686FEB00B244C1 /* VideoController~ipad.xib */; };
+		846D05041868707B00B244C1 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 846D05031868707B00B244C1 /* AVFoundation.framework */; };
+		846D05061868708200B244C1 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 846D05051868708200B244C1 /* MediaPlayer.framework */; };
 		849E2C4A182CEF9C00477E11 /* accountIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2C43182CEF9C00477E11 /* accountIcon.png */; };
 		849E2C4B182CEF9C00477E11 /* arrowsIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2C44182CEF9C00477E11 /* arrowsIcon.png */; };
 		849E2C4C182CEF9C00477E11 /* faqIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2C45182CEF9C00477E11 /* faqIcon.png */; };
@@ -201,6 +206,12 @@
 		845D710E182BC43600A3757C /* horizontalShadow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = horizontalShadow.png; sourceTree = "<group>"; };
 		845D7110182BD63600A3757C /* yellowStar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = yellowStar.png; sourceTree = "<group>"; };
 		845D7112182BDEA700A3757C /* busIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = busIcon.png; sourceTree = "<group>"; };
+		846D04FC18686FC600B244C1 /* VideoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoController.h; sourceTree = "<group>"; };
+		846D04FD18686FC600B244C1 /* VideoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoController.m; sourceTree = "<group>"; };
+		846D04FE18686FC600B244C1 /* VideoController~iphone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "VideoController~iphone.xib"; sourceTree = "<group>"; };
+		846D050118686FEB00B244C1 /* VideoController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "VideoController~ipad.xib"; sourceTree = "<group>"; };
+		846D05031868707B00B244C1 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		846D05051868708200B244C1 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		849E2C43182CEF9C00477E11 /* accountIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = accountIcon.png; sourceTree = "<group>"; };
 		849E2C44182CEF9C00477E11 /* arrowsIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrowsIcon.png; sourceTree = "<group>"; };
 		849E2C45182CEF9C00477E11 /* faqIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = faqIcon.png; sourceTree = "<group>"; };
@@ -332,6 +343,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				846D05061868708200B244C1 /* MediaPlayer.framework in Frameworks */,
+				846D05041868707B00B244C1 /* AVFoundation.framework in Frameworks */,
 				849E5AE3183B9529001F2F17 /* SystemConfiguration.framework in Frameworks */,
 				849E5AE1183B94DA001F2F17 /* Security.framework in Frameworks */,
 				849E2CBB18322D8100477E11 /* MessageUI.framework in Frameworks */,
@@ -374,6 +387,8 @@
 		845D7083182B9BA800A3757C = {
 			isa = PBXGroup;
 			children = (
+				846D05051868708200B244C1 /* MediaPlayer.framework */,
+				846D05031868707B00B244C1 /* AVFoundation.framework */,
 				845D7095182B9BA800A3757C /* MotorHomes */,
 				845D708E182B9BA800A3757C /* Frameworks */,
 				845D708D182B9BA800A3757C /* Products */,
@@ -592,6 +607,10 @@
 				8452E9F7184E42880066C99C /* GalleryController.m */,
 				8452E9F8184E42880066C99C /* GalleryController~iphone.xib */,
 				8452E9FB184E42A90066C99C /* GalleryController~ipad.xib */,
+				846D04FC18686FC600B244C1 /* VideoController.h */,
+				846D04FD18686FC600B244C1 /* VideoController.m */,
+				846D04FE18686FC600B244C1 /* VideoController~iphone.xib */,
+				846D050118686FEB00B244C1 /* VideoController~ipad.xib */,
 			);
 			name = ItemDetailsController;
 			sourceTree = "<group>";
@@ -792,6 +811,8 @@
 				8452B1D1184F4A6B00D9A924 /* blackGradient.png in Resources */,
 				8452B1D2184F4A6B00D9A924 /* downArrow.png in Resources */,
 				8452B1D7184F533500D9A924 /* TapToShowView.xib in Resources */,
+				846D050018686FC600B244C1 /* VideoController~iphone.xib in Resources */,
+				846D050218686FEB00B244C1 /* VideoController~ipad.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -848,6 +869,7 @@
 				8452E9E9184E34490066C99C /* FaqController.m in Sources */,
 				8452E9F9184E42880066C99C /* GalleryController.m in Sources */,
 				8452B1D5184F531800D9A924 /* TapToShowView.m in Sources */,
+				846D04FF18686FC600B244C1 /* VideoController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

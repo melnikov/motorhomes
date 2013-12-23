@@ -24,6 +24,13 @@
 	self.frame = blackGradient.frame;
 	
 	transform = arrowImage.transform;
+	
+	if(IS_IPAD)
+	{
+		self.headerText.textAlignment = UITextAlignmentCenter;
+			
+		self.contentText.font = [UIFont systemFontOfSize:18];
+	}
 }
 
 - (IBAction)buttonShowPressed
@@ -47,10 +54,8 @@
 	
 	changeHeight = self.frame.size.height - changeHeight;
 	
-	NSDictionary * dict = @{@"view" : self, @"change" : [NSNumber numberWithFloat:changeHeight]};
-	
-	if([self.delegate respondsToSelector:@selector(tapToShowViewFrameChanged:)])
-		[self.delegate performSelector:@selector(tapToShowViewFrameChanged:) withObject:dict];
+	if([self.delegate respondsToSelector:@selector(tapToShowView:heightChanged:)])
+		[self.delegate tapToShowView:self heightChanged:changeHeight];
 }
 
 @end

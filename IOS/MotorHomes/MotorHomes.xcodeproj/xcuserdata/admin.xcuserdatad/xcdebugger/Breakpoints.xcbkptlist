@@ -151,11 +151,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "MotorHomes/ItemDetailsController.m"
-         timestampString = "408987182.892137"
+         timestampString = "409504241.4314"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "89"
-         endingLineNumber = "89"
+         startingLineNumber = "93"
+         endingLineNumber = "93"
          landmarkName = "-getSpecsForInventory"
          landmarkType = "5">
       </FileBreakpoint>
@@ -164,11 +164,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "MotorHomes/ItemDetailsController.m"
-         timestampString = "408990703.731797"
+         timestampString = "409504241.4314"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "214"
-         endingLineNumber = "214"
+         startingLineNumber = "218"
+         endingLineNumber = "218"
          landmarkName = "-parseSpecs:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -177,11 +177,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "MotorHomes/ItemDetailsController.m"
-         timestampString = "408987613.443658"
+         timestampString = "409504241.4314"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "143"
-         endingLineNumber = "143"
+         startingLineNumber = "147"
+         endingLineNumber = "147"
          landmarkName = "-parseSpecs:"
          landmarkType = "5">
       </FileBreakpoint>

@@ -8,6 +8,10 @@
 
 #import "ItemDetailsController.h"
 #import "GalleryController.h"
+#import "VideoController.h"
+
+#import <AVFoundation/AVFoundation.h>
+#import <MediaPlayer/MediaPlayer.h>
 
 @interface ItemDetailsController ()
 {
@@ -346,7 +350,23 @@
 
 - (IBAction)watchVideoPressed
 {
-	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://www.youtube.com/watch?v=%@", [videoButton titleForState:UIControlStateApplication]]]];
+	//NSString *fileURL = [NSString stringWithFormat:@"http://www.youtube.com/v/%@", [videoButton titleForState:UIControlStateApplication]];
+	
+//	[self.navigationController pushViewController:[[VideoController alloc] initWithURL:[videoButton titleForState:UIControlStateApplication] frame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)] animated:YES];
+	
+	[self presentModalViewController:[[VideoController alloc] initWithURL:[videoButton titleForState:UIControlStateApplication] frame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)] animated:YES];
+	
+//	MPMoviePlayerController *moviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:fileURL];
+//	
+//	[moviePlayerController.view setFrame:CGRectMake(0, 70, 320, 270)];
+//	
+//	[self.view addSubview:moviePlayerController.view];
+//	
+//	moviePlayerController.fullscreen = YES;
+//	
+//	[moviePlayerController play];
+	
+//	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://www.youtube.com/watch?v=%@", [videoButton titleForState:UIControlStateApplication]]]];
 }
 
 - (IBAction)callUsPressed

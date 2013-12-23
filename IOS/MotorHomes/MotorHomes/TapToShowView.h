@@ -8,10 +8,19 @@
 
 #import <UIKit/UIKit.h>
 
+@class TapToShowView;
+
+@protocol TapToShowViewDelegate
+
+@optional
+-(void)tapToShowView:(TapToShowView*)view heightChanged:(float)height;
+
+@end
+
 @interface TapToShowView : UIView
 
 @property (strong, nonatomic) IBOutlet UILabel *headerText;
 @property (strong, nonatomic) IBOutlet UILabel *contentText;
-@property (strong, nonatomic) id delegate;
+@property (strong, nonatomic) NSObject <TapToShowViewDelegate> * delegate;
 
 @end
