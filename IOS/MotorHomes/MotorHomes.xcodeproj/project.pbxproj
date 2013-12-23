@@ -53,8 +53,6 @@
 		846D04FF18686FC600B244C1 /* VideoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 846D04FD18686FC600B244C1 /* VideoController.m */; };
 		846D050018686FC600B244C1 /* VideoController~iphone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 846D04FE18686FC600B244C1 /* VideoController~iphone.xib */; };
 		846D050218686FEB00B244C1 /* VideoController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 846D050118686FEB00B244C1 /* VideoController~ipad.xib */; };
-		846D05041868707B00B244C1 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 846D05031868707B00B244C1 /* AVFoundation.framework */; };
-		846D05061868708200B244C1 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 846D05051868708200B244C1 /* MediaPlayer.framework */; };
 		849E2C4A182CEF9C00477E11 /* accountIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2C43182CEF9C00477E11 /* accountIcon.png */; };
 		849E2C4B182CEF9C00477E11 /* arrowsIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2C44182CEF9C00477E11 /* arrowsIcon.png */; };
 		849E2C4C182CEF9C00477E11 /* faqIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 849E2C45182CEF9C00477E11 /* faqIcon.png */; };
@@ -210,8 +208,6 @@
 		846D04FD18686FC600B244C1 /* VideoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoController.m; sourceTree = "<group>"; };
 		846D04FE18686FC600B244C1 /* VideoController~iphone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "VideoController~iphone.xib"; sourceTree = "<group>"; };
 		846D050118686FEB00B244C1 /* VideoController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "VideoController~ipad.xib"; sourceTree = "<group>"; };
-		846D05031868707B00B244C1 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		846D05051868708200B244C1 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		849E2C43182CEF9C00477E11 /* accountIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = accountIcon.png; sourceTree = "<group>"; };
 		849E2C44182CEF9C00477E11 /* arrowsIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrowsIcon.png; sourceTree = "<group>"; };
 		849E2C45182CEF9C00477E11 /* faqIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = faqIcon.png; sourceTree = "<group>"; };
@@ -343,8 +339,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				846D05061868708200B244C1 /* MediaPlayer.framework in Frameworks */,
-				846D05041868707B00B244C1 /* AVFoundation.framework in Frameworks */,
 				849E5AE3183B9529001F2F17 /* SystemConfiguration.framework in Frameworks */,
 				849E5AE1183B94DA001F2F17 /* Security.framework in Frameworks */,
 				849E2CBB18322D8100477E11 /* MessageUI.framework in Frameworks */,
@@ -387,8 +381,6 @@
 		845D7083182B9BA800A3757C = {
 			isa = PBXGroup;
 			children = (
-				846D05051868708200B244C1 /* MediaPlayer.framework */,
-				846D05031868707B00B244C1 /* AVFoundation.framework */,
 				845D7095182B9BA800A3757C /* MotorHomes */,
 				845D708E182B9BA800A3757C /* Frameworks */,
 				845D708D182B9BA800A3757C /* Products */,

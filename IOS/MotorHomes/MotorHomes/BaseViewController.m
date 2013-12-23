@@ -107,4 +107,20 @@
     return YES;
 }
 
+-(BOOL)shouldAutorotate
+{
+	if(IS_IPAD)
+		return YES;
+	
+	return NO;
+}
+
+-(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+	if(IS_IPAD)
+		return YES;
+	
+	return NO;
+}
+
 @end
